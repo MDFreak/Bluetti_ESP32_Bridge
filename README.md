@@ -16,7 +16,7 @@ Join the Discord Server https://discord.gg/fWDSBTCVmB
   * AC200 (tested)
   * EB3A (tested)
   * EP500 (untested)
-  * EP500P (tested)
+  * EP500P (tested, MDFreak not tested)
   * EP600 (some values still missing)
 * supported BLUETTI functions
   * commands (not activated yet)
@@ -35,6 +35,8 @@ Join the Discord Server https://discord.gg/fWDSBTCVmB
     * power generation
     * total battery percent
     * other states - not specified here
+
+    * divers values
 
 ## Getting Started
 
