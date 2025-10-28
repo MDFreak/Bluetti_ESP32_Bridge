@@ -3,7 +3,17 @@ This is an ESP32 based Bluetooth to MQTT Bride for BLUETTI power stations. The p
 The code is tested on a AC300. Other Powerstations may also work but not tested by me. The discussion on https://diysolarforum.com/threads/monitoring-bluetti-systems.37870/ was a great help for understanding the protocol.
 Community of Mario Lukas on Discord Server to join: https://discord.gg/fWDSBTCVmB
 
-
+# Sence and motivation for this project 
+* We build a stand alone tinyhouse in the outback.
+  We will only use this house time by time.
+* The whole equipment is to be controlled remote from far away.
+* Home Assistant (HA) is running using a RasPi5.
+  This RasPI cannot be placed properly for stable use of BLE.
+* ESP32 with best connectivity and low power consumption 
+  is inexpensive and a proper choice for an interface BLE <-> WiFi        
+* As Bluetti does not like to provide a memory map and I would like
+  to see more detailed data of my Bluetti system, I join the
+  hacking group to find out. 
 
 ## V0.1.1 MDFreak 
 #Added Features
