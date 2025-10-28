@@ -1,11 +1,19 @@
 ## About
 This is an ESP32 based Bluetooth to MQTT Bride for BLUETTI power stations. The project is based on https://github.com/warhammerkid/bluetti_mqtt and forked from https://github.com/mariolukas/Bluetti_ESP32_Bridge.
 The code is tested on a AC300. Other Powerstations may also work but not tested by me. The discussion on https://diysolarforum.com/threads/monitoring-bluetti-systems.37870/ was a great help for understanding the protocol.
+Community of Mario Lukas on Discord Server to join: https://discord.gg/fWDSBTCVmB
 
-## Community of Mario Lukas
-Join the Discord Server https://discord.gg/fWDSBTCVmB
 
-## Features V0.1.1
+
+## V0.1.1 MDFreak 
+#Added Features
+* Scan undocumented interface addresses to find out position of data.
+  Names look like ADR_0x0208_UINT for page 0x02 and offset 0x08 
+* Those data are transfered via MQTT and automatically imported in HA
+* Add fields with names including address - example ADR_0x0BF7_UINT
+  files: Device_AC300.h, DeviceType.h, MQTT.cpp, BTooth.cpp
+* update README.md to provide actual information for possible users  
+
 
 * easy configuration with WiFi manager
 * display support OLED 128x64
@@ -170,10 +178,6 @@ Example display screen:
 * adding logging poll commands
 
 ## CHANGELOG
-
-* MD0.1.1 - 2025-10-28 - add scanning of unknown modbus adresses of AC300
-  - add fields with names including address - example ADR_0x0BF7_UINT
-  - files: Device_AC300.h, DeviceType.h, MQTT.cpp, BTooth.cpp
 
 * MD0.1.0 - 2025-01-18 - md - extend functionality for AC300
   - add and synchronize enums and fields in Device_AC300.h and DeviceType.h
