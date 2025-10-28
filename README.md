@@ -12,16 +12,16 @@ Join the Discord Server https://discord.gg/fWDSBTCVmB
   * tested ESP32 WROOM with display: https://github.com/LilyGO/TTGO-T2-ESP32
 * mqtt support
 * support for BLUETTI power stations
-  * AC300 (tested)
-  * AC200 (tested)
-  * EB3A (tested)
+  * AC300 (tested, still in value search)
+  * AC200 (tested, MDFreak not tested)
+  * EB3A (tested, MDFreak not tested)
   * EP500 (untested)
-  * EP500P (tested)
+  * EP500P (tested, MDFreak not tested)
   * EP600 (some values still missing)
 * supported BLUETTI functions
-  * commands
-    * ac output on/off
-    * dc output on/off
+  * commands 
+    * ac output on/off (MDFreak not tested)
+    * dc output on/off (MDFreak not tested)
   * states
     * ac input power
     * dc input power
@@ -33,6 +33,8 @@ Join the Discord Server https://discord.gg/fWDSBTCVmB
     * device type
     * power generation
     * total battery percent
+
+    * divers values  
 
 ## Getting Started
 
