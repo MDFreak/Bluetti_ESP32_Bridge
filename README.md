@@ -15,9 +15,12 @@ Community of Mario Lukas on Discord Server to join: https://discord.gg/fWDSBTCVm
   to see more detailed data of my Bluetti system, I join the
   hacking group to find out. 
 
-## 
+# Funktion  (V0.1.1)
 
-
+## TODO
+* finish update of README.md
+* add more scan addresses
+* test functinality with new installed device
 
 ## V0.1.1  
 Added Features
@@ -53,7 +56,7 @@ Import SW of Mario Lukas into my used system (VSCode & PlatformIO) and libraries
 * Part of program and names are adapted to my ideas and program flow
 * The workflow of Mario Lukas is still basic  
 
-## Forked funktionality  =  FEATURES in README from Mario Lukas
+# Forked funktionality  =  FEATURES in README from Mario Lukas
 * easy configuration with WiFi manager
 * display support OLED 128x64
   * tested ESP32 WROOM with display: https://github.com/LilyGO/TTGO-T2-ESP32
