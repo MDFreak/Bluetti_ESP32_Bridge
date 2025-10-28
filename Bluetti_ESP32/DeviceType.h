@@ -81,14 +81,17 @@
       ADR_0x0066_UINT,
       ADR_0x0067_UINT,
       ADR_0x0068_UINT,
-      CELL_VOLTAGES,
-      ADR_0x0089_UINT,
-      ADR_0x008A_UINT,
-      ADR_0x008B_UINT,
-      ADR_0x008C_UINT,
-      ADR_0x008D_UINT,
-      ADR_0x008E_UINT,
-      ADR_0x008F_UINT,
+      CELL1VOLTAGES,
+      CELL2VOLTAGES,
+      CELL3VOLTAGES,
+      CELL4VOLTAGES,
+      //ADR_0x0089_UINT,
+      //ADR_0x008A_UINT,
+      //ADR_0x008B_UINT,
+      //ADR_0x008C_UINT,
+      //ADR_0x008D_UINT,
+      //ADR_0x008E_UINT,
+      //ADR_0x008F_UINT,
 
       UPS_MODE,
       ADR_0x0BBA_UINT,
@@ -167,6 +170,13 @@
     #endif
 #endif
 
-/* MD0.0.1 - 2025-01-11 - md - initial version
- * - change code format to MD format for better readability
- *///------------------------------------------------------------------------------------
+// - changelog --------------------------------------------------------------------------
+  /*
+   * MD0.1.1 - 2025-10-28 - add scanning of unknown modbus adresses of AC300
+   * - add fields with names including address - example ADR_0x0BF7_UINT
+   *   files: Device_AC300.h, DeviceType.h, MQTT.cpp, BTooth.cpp
+   *///------------------------------------------------------------------------------------
+  /*
+   * MD0.0.1 - 2025-01-11 - md - initial version
+   * - change code format to MD format for better readability
+   *///------------------------------------------------------------------------------------

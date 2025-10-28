@@ -96,14 +96,17 @@ String map_field_name(enum field_names f_name)
         case ADR_0x0066_UINT:           return "adr_0x0066_uint";           break;
         case ADR_0x0067_UINT:           return "adr_0x0067_uint";           break;
         case ADR_0x0068_UINT:           return "adr_0x0068_uint";           break;
-        case CELL_VOLTAGES:             return "cell_voltages";             break;
-        case ADR_0x0089_UINT:           return "adr_0x0089_uint";           break;
-        case ADR_0x008A_UINT:           return "adr_0x008A_uint";           break;
-        case ADR_0x008B_UINT:           return "adr_0x008B_uint";           break;
-        case ADR_0x008C_UINT:           return "adr_0x008C_uint";           break;
-        case ADR_0x008D_UINT:           return "adr_0x008D_uint";           break;
-        case ADR_0x008E_UINT:           return "adr_0x008E_uint";           break;
-        case ADR_0x008F_UINT:           return "adr_0x008F_uint";           break;
+        case CELL1VOLTAGES:             return "cell1voltages";             break;
+        case CELL2VOLTAGES:             return "cell2voltages";             break;
+        case CELL3VOLTAGES:             return "cell3voltages";             break;
+        case CELL4VOLTAGES:             return "cell4voltages";             break;
+        //case ADR_0x0089_UINT:           return "adr_0x0089_uint";           break;
+        //case ADR_0x008A_UINT:           return "adr_0x008A_uint";           break;
+        //case ADR_0x008B_UINT:           return "adr_0x008B_uint";           break;
+        //case ADR_0x008C_UINT:           return "adr_0x008C_uint";           break;
+        //case ADR_0x008D_UINT:           return "adr_0x008D_uint";           break;
+        //case ADR_0x008E_UINT:           return "adr_0x008E_uint";           break;
+        //case ADR_0x008F_UINT:           return "adr_0x008F_uint";           break;
 
         case UPS_MODE:                  return "ups_mode";                  break;
         case ADR_0x0BBA_UINT:           return "adr_0x0BBA_uint";           break;
@@ -215,11 +218,13 @@ void callback(char* topic, byte* payload, unsigned int length)
     String topic_path = String(topic);
     topic_path.toLowerCase();//in case we recieve DC_OUTPUT_ON instead of the expected dc_output_on
 
+    Serial.println();
     Serial.print("MQTT Message arrived on topic: ");
     Serial.print(topic);
     Serial.print(" Payload: ");
     String strPayload = String((char * ) payload);
     Serial.println(strPayload);
+    Serial.println();
 
     bt_command_t command;
     command.prefix = 0x01;
@@ -447,8 +452,14 @@ unsigned long getLastMQTTDeviceStateStatusMessageTime()
   {
     return previousDeviceStateStatusPublish;
   }
-/* - changelog --------------------------------------------------------------------------
- * MD0.0.1 - 2025-01-11 - md - initial version
- *
- * - change code format to MD format for better readability
- * ------------------------------------------------------------------------------------- */
+// - changelog --------------------------------------------------------------------------
+  /*
+   * MD0.1.1 - 2025-10-28 - add scanning of unknown modbus adresses of AC300
+   * - add fields with names including address - example ADR_0x0BF7_UINT
+   *   files: Device_AC300.h, DeviceType.h, MQTT.cpp, BTooth.cpp
+   *///------------------------------------------------------------------------------------
+  /*
+   * MD0.0.1 - 2025-01-11 - md - initial version
+   *
+   * - change code format to MD format for better readability
+   * ------------------------------------------------------------------------------------- */

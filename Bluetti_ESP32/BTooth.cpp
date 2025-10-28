@@ -204,7 +204,7 @@ void sendBTCommand(bt_command_t command)
 #ifdef SIM_BLUETTI
     void sendSIM_data(int poll_idx)
       {
-        uint8_t val[20];
+        uint8_t val[36];
         //for (int i = 0; i < sizeof(bluetti_device_state) / sizeof(device_field_data_t); i++)
         for (int i = bluetti_poll_idx[poll_idx].f_start; i <= bluetti_poll_idx[poll_idx].f_end; i++)
           {
@@ -220,8 +220,8 @@ void sendBTCommand(bt_command_t command)
                 case ADR_0x0010_UINT:           // UINT_FIELD AC300
                     val[0]=0x03; val[1]=0xFA;    // -> 1018 (03FA)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
-                      //Serial.print("[BT] SIM - ADR_0x0010_UINT: ");
-                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                      Serial.print("[BT] SIM - ADR_0x0010_UINT: ");
+                      Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
                 case SERIAL_NUMBER:             // SN_FIELD   AC300
                     char sn[16];                // 2235000574654
@@ -598,61 +598,125 @@ void sendBTCommand(bt_command_t command)
                       //Serial.print("[BT] SIM - ADR_0x0068_UINT: ");
                       //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case CELL_VOLTAGES:             // DECIMAL_ARRAY
+                case CELL1VOLTAGES:             // DECIMAL_ARRAY
                     val[0]=01; val[1]=0x4A; val[2]=01; val[3]=0x4A;   // -> 3,30/3,31/../3,44/3,45 (014A/014B/../0154/0155)
                     val[4]=01; val[5]=0x4B; val[6]=01; val[7]=0x4B;
                     val[8]=01; val[9]=0x4C; val[10]=01; val[11]=0x4C;
                     val[12]=01; val[13]=0x4D; val[14]=01; val[15]=0x4D;
+                    val[16]=01; val[17]=0x4F; val[18]=01; val[19]=0x4F;   // -> 3,30/3,31/../3,44/3,45 (014A/014B/../0154/0155)
+                    val[20]=01; val[21]=0x50; val[22]=01; val[23]=0x50;
+                    val[24]=01; val[25]=0x51; val[26]=01; val[27]=0x51;
+                    val[28]=01; val[29]=0x52; val[30]=01; val[31]=0x52;
                     publishTopic(bluetti_device_state[i].f_name,
                                  parse_decimal_array(val, bluetti_device_state[i].f_size,
                                                           bluetti_device_state[i].f_scale,
                                                           bluetti_device_state[i].f_enum  ));
-                    //Serial.print("[BT] SIM - CELL_VOLTAGES: ");
-                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                      //Serial.println("[BT] SIM - CELL1VOLTAGES: ");
+                      //Serial.println(parse_decimal_array(val, bluetti_device_state[i].f_size,
+                      //                                      bluetti_device_state[i].f_scale,
+                      //                                      bluetti_device_state[i].f_enum  ));
+                      //Serial.println();
                   break;
-                case ADR_0x0089_UINT:           // UINT_FIELD
+                  //case CELL2VOLTAGES:             // DECIMAL_ARRAY
+                  //    val[0]=01; val[1]=0x4A +1; val[2]=01; val[3]=0x4A +1;   // -> 3,30/3,31/../3,44/3,45 (014A/014B/../0154/0155)
+                  //    val[4]=01; val[5]=0x4B +1; val[6]=01; val[7]=0x4B +1;
+                  //    val[8]=01; val[9]=0x4C +1; val[10]=01; val[11]=0x4C +1;
+                  //    val[12]=01; val[13]=0x4D +1; val[14]=01; val[15]=0x4D +1;
+                  //    val[16]=01; val[17]=0x4F +1; val[18]=01; val[19]=0x4F +1;   // -> 3,30/3,31/../3,44/3,45 (014A/014B/../0154/0155)
+                  //    val[20]=01; val[21]=0x50 +1; val[22]=01; val[23]=0x50 +1;
+                  //    val[24]=01; val[25]=0x51 +1; val[26]=01; val[27]=0x51 +1;
+                  //    val[28]=01; val[29]=0x52 +1; val[30]=01; val[31]=0x52 +1;
+                  //    publishTopic(bluetti_device_state[i].f_name,
+                  //                 parse_decimal_array(val, bluetti_device_state[i].f_size,
+                  //                                          bluetti_device_state[i].f_scale,
+                  //                                          bluetti_device_state[i].f_enum  ));
+                  //      //Serial.println("[BT] SIM - CELL2VOLTAGES: ");
+                  //      //Serial.println(parse_decimal_array(val, bluetti_device_state[i].f_size,
+                  //      //                                      bluetti_device_state[i].f_scale,
+                  //      //                                      bluetti_device_state[i].f_enum  ));
+                  //      //Serial.println();
+                  //  break;
+                  //case CELL3VOLTAGES:             // DECIMAL_ARRAY
+                  //    val[0]=01; val[1]=0x4A +2; val[2]=01; val[3]=0x4A +2;   // -> 3,30/3,31/../3,44/3,45 (014A/014B/../0154/0155)
+                  //    val[4]=01; val[5]=0x4B +2; val[6]=01; val[7]=0x4B +2;
+                  //    val[8]=01; val[9]=0x4C +2; val[10]=01; val[11]=0x4C +2;
+                  //    val[12]=01; val[13]=0x4D +2; val[14]=01; val[15]=0x4D +2;
+                  //    val[16]=01; val[17]=0x4F +2; val[18]=01; val[19]=0x4F +2;   // -> 3,30/3,31/../3,44/3,45 (014A/014B/../0154/0155)
+                  //    val[20]=01; val[21]=0x50 +2; val[22]=01; val[23]=0x50 +2;
+                  //    val[24]=01; val[25]=0x51 +2; val[26]=01; val[27]=0x51 +2;
+                  //    val[28]=01; val[29]=0x52 +2; val[30]=01; val[31]=0x52 +2;
+                  //    publishTopic(bluetti_device_state[i].f_name,
+                  //                 parse_decimal_array(val, bluetti_device_state[i].f_size,
+                  //                                          bluetti_device_state[i].f_scale,
+                  //                                          bluetti_device_state[i].f_enum  ));
+                  //      //Serial.println("[BT] SIM - CELL3VOLTAGES: ");
+                  //      //Serial.println(parse_decimal_array(val, bluetti_device_state[i].f_size,
+                  //      //                                      bluetti_device_state[i].f_scale,
+                  //      //                                      bluetti_device_state[i].f_enum  ));
+                  //      //Serial.println();
+                  //  break;
+                  //case CELL4VOLTAGES:             // DECIMAL_ARRAY
+                  //    val[0]=01; val[1]=0x4A +3; val[2]=01; val[3]=0x4A +3;   // -> 3,30/3,31/../3,44/3,45 (014A/014B/../0154/0155)
+                  //    val[4]=01; val[5]=0x4B +3; val[6]=01; val[7]=0x4B +3;
+                  //    val[8]=01; val[9]=0x4C +3; val[10]=01; val[11]=0x4C +3;
+                  //    val[12]=01; val[13]=0x4D +3; val[14]=01; val[15]=0x4D +3;
+                  //    val[16]=01; val[17]=0x4F +3; val[18]=01; val[19]=0x4F +3;   // -> 3,30/3,31/../3,44/3,45 (014A/014B/../0154/0155)
+                  //    val[20]=01; val[21]=0x50 +3; val[22]=01; val[23]=0x50 +3;
+                  //    val[24]=01; val[25]=0x51 +3; val[26]=01; val[27]=0x51 +3;
+                  //    val[28]=01; val[29]=0x52 +3; val[30]=01; val[31]=0x52 +3;
+                  //    publishTopic(bluetti_device_state[i].f_name,
+                  //                 parse_decimal_array(val, bluetti_device_state[i].f_size,
+                  //                                          bluetti_device_state[i].f_scale,
+                  //                                          bluetti_device_state[i].f_enum  ));
+                  //      //Serial.println("[BT] SIM - CELL4VOLTAGES: ");
+                  //      //Serial.println(parse_decimal_array(val, bluetti_device_state[i].f_size,
+                  //      //                                      bluetti_device_state[i].f_scale,
+                  //      //                                      bluetti_device_state[i].f_enum  ));
+                  //      //Serial.println();
+                  //  break;
+                  ////case ADR_0x0089_UINT:           // UINT_FIELD
                     val[0]=0x00; val[1]=0x89 + simTick;   // -> 1823 (0B00)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
                     //Serial.print("[BT] SIM - ADR_0x0089_UINT: ");
                     //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case ADR_0x008A_UINT:           // UINT_FIELD
+                  ////case ADR_0x008A_UINT:           // UINT_FIELD
                     val[0]=0x00; val[1]=0x8A + simTick;   // -> 1823 (0B00)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
                     //Serial.print("[BT] SIM - ADR_0x008A_UINT: ");
                     //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case ADR_0x008B_UINT:           // UINT_FIELD
+                  ////case ADR_0x008B_UINT:           // UINT_FIELD
                     val[0]=0x00; val[1]=0x8B + simTick;   // -> 1823 (0B00)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
                     //Serial.print("[BT] SIM - ADR_0x008B_UINT: ");
                     //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case ADR_0x008C_UINT:           // UINT_FIELD
+                  ////case ADR_0x008C_UINT:           // UINT_FIELD
                     val[0]=0x00; val[1]=0x8C + simTick;   // -> 1823 (0B00)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
                     //Serial.print("[BT] SIM - ADR_0x008C_UINT: ");
                     //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case ADR_0x008D_UINT:           // UINT_FIELD
+                  ////case ADR_0x008D_UINT:           // UINT_FIELD
                     val[0]=0x00; val[1]=0x8D + simTick;   // -> 1823 (0B00)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
                     //Serial.print("[BT] SIM - ADR_0x008D_UINT: ");
                     //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case ADR_0x008E_UINT:           // UINT_FIELD
+                  ////case ADR_0x008E_UINT:           // UINT_FIELD
                     val[0]=0x00; val[1]=0xBE + simTick;   // -> 1823 (0B00)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
                     //Serial.print("[BT] SIM - ADR_0x008E_UINT: ");
                     //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case ADR_0x008F_UINT:           // UINT_FIELD
+                  ////case ADR_0x008F_UINT:           // UINT_FIELD
                     val[0]=0x00; val[1]=0x8F+simTick;   // -> 1823 (0B00)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
                     //Serial.print("[BT] SIM - ADR_0x008F_UINT: ");
                     //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                // page 0x0B -> 2816+
+                  //// page 0x0B -> 2816+
                 case UPS_MODE:                  // ENUM_FIELD AC300
                     val[0]=0x00; val[1]=0x04;   // ->4 (0004)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_enum_field(val, bluetti_device_state[i].f_type)));
@@ -856,25 +920,33 @@ unsigned long getLastBTMessageTime()
   {
       return lastBTMessage;
   }
+
 // - changelog --------------------------------------------------------------------------
-/* MD0.0.2 - 2025-01-13 - simuting Bluetti data for MQTT
- * - introduce simulation for BT to implement MQTT without Bluetti
- *   - new define SIM_BLUETTI (-> platform.ini)
- *     used to block unused BT functions
- *     and activate simulation function
- *   - simulation starts in function 'handleBluetooth()' and uses
- *     new function 'sendSIM_data()' to publish data
- *     uses standard decoding methods
- *   - works with 8 items
- *   - add '#include "MQTT.h"' to Bluetooth.cpp
- * - set default data for connections
- * - introduce simulation for BT to implement MQTT without Bluetti
- */// -----------------------------------------------------------------------------------
-/* MD0.0.1 - 2025-01-11 - md - initial version
- * - new define USE_DISPLAY (-> platform.ini)
- *   ndef USE_DISPLAY = no display implemented
- * - change code format to MD format for better readability
- *///------------------------------------------------------------------------------------
+  /*
+   * MD0.1.1 - 2025-10-28 - add scanning of unknown modbus adresses of AC300
+   * - add fields with names including address - example ADR_0x0BF7_UINT
+   *   files: Device_AC300.h, DeviceType.h, MQTT.cpp, BTooth.cpp
+   *///------------------------------------------------------------------------------------
+  /*
+   * MD0.0.2 - 2025-01-13 - simuting Bluetti data for MQTT
+   * - introduce simulation for BT to implement MQTT without Bluetti
+   *   - new define SIM_BLUETTI (-> platform.ini)
+   *     used to block unused BT functions
+   *     and activate simulation function
+   *   - simulation starts in function 'handleBluetooth()' and uses
+   *     new function 'sendSIM_data()' to publish data
+   *     uses standard decoding methods
+   *   - works with 8 items
+   *   - add '#include "MQTT.h"' to Bluetooth.cpp
+   * - set default data for connections
+   * - introduce simulation for BT to implement MQTT without Bluetti
+   */// -----------------------------------------------------------------------------------
+  /*
+   * MD0.0.1 - 2025-01-11 - md - initial version
+   * - new define USE_DISPLAY (-> platform.ini)
+   *   ndef USE_DISPLAY = no display implemented
+   * - change code format to MD format for better readability
+   *///------------------------------------------------------------------------------------
 
 
 

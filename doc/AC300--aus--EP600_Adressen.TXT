@@ -1,0 +1,187 @@
+https://www.bluetti-forum.de/t240f51335-EP-mit-MQTT-verbinden.html
+
+
+Nachdem ich mit Carlo schon über die Adressen der EP600 nachgedacht habe, hier mal meine Konfiguration in den Header-Files, die als MQTT Commands zurück geschrieben werden können.
+Die Adressen sind in Hex, können aber sich leicht in Dezimal umgerechnet werden, falls wer das Phyton-Projekt verwendet ...
+
+
+// parameters that can be set via mqtt.
+// Hint: In the case topics not appearing automatically on the mqtt server they need to be created manually.
+// This can be done with MqttExplorer for instance
+// 
+// As a work around we use the ENUM field for the initial value when publishing the parameters.
+// For now, the command publish only works for the boolean type.
+//
+// { FIELD_NAME, PAGE, OFFSET, SIZE, SCALE (if scale is needed e.g. decimal value, defaults to 0) , ENUM (if data is enum, defaults to 0) , FIELD_TYPE }
+static device_field_data_t bluetti_device_command[] = {
+  
+  {SYSTEM_SWITCH,             0x07, 0xDB, 1, 0, -1, BOOL_FIELD},
+  {SOC_MIN_PERCENTAGE,        0x07, 0xE6, 1, 0, -1, UINT_FIELD}, 
+  {SOC_MAX_PERCENTAGE,        0x07, 0xE8, 1, 0, -1, UINT_FIELD},  
+  {TIME_OF_USE,               0x07, 0xED, 1, 0, -1, BOOL_FIELD},
+ 
+//  {BUZZER_SWITCH,             0x08, 0x12, 1, 0, -1, BOOL_FIELD},
+  {CHARGE_FROM_GRID,          0x08, 0x9F, 1, 0, -1, BOOL_FIELD},
+  {FEED_INTO_GRID,            0x08, 0xA0, 1, 0, -1, BOOL_FIELD},
+  {GRID_SELF_ADAPTION,        0x08, 0xB1, 1, 0, -1, BOOL_FIELD},
+  {SYSTEM_SWITCH_RECOVERY,    0x08, 0xB2, 1, 0, -1, BOOL_FIELD},
+ 
+  {AC_INPUT_POWER_MAX,        0x08, 0xA5, 1, 0, -1, UINT_FIELD},
+  {AC_INPUT_CURRENT_MAX,      0x08, 0xA6, 1, 0, -1, UINT_FIELD},
+  {AC_OUTPUT_POWER_MAX,       0x08, 0xA7, 1, 0, -1, UINT_FIELD},
+  {AC_OUTPUT_CURRENT_MAX,     0x08, 0xA8, 1, 0, -1, UINT_FIELD},
+};
+
+
+Zusätzlich gibt es dann auch noch die Adressen für den "Kalender", der kann ausgelesen, als auch beschrieben werden (verwende ich gerade nicht):
+
+
+  // Schedule
+  // Schedule Status: 0 = not active, 1 = Off-Peak (charge), 2 = Peak (discharge)
+/*
+  {SCHEDULE_1_STAT,           0x07, 0xEE, 1, 0, 0, UINT_FIELD},
+  {SCHEDULE_1_FROM,           0x07, 0xEF, 2, 0, 0, DATETIME_FIELD},
+  {SCHEDULE_1_TO,             0x07, 0xF0, 2, 0, 0, DATETIME_FIELD},
+  {SCHEDULE_2_STAT,           0x07, 0xF1, 1, 0, 0, UINT_FIELD},
+  {SCHEDULE_2_FROM,           0x07, 0xF2, 2, 0, 0, DATETIME_FIELD},
+  {SCHEDULE_2_TO,             0x07, 0xF3, 2, 0, 0, DATETIME_FIELD},
+  {SCHEDULE_3_STAT,           0x07, 0xF4, 1, 0, 0, UINT_FIELD},
+  {SCHEDULE_3_FROM,           0x07, 0xF5, 2, 0, 0, DATETIME_FIELD},
+  {SCHEDULE_3_TO,             0x07, 0xF6, 2, 0, 0, DATETIME_FIELD},
+  {SCHEDULE_4_STAT,           0x07, 0xF7, 1, 0, 0, UINT_FIELD},
+  {SCHEDULE_4_FROM,           0x07, 0xF8, 2, 0, 0, DATETIME_FIELD},
+  {SCHEDULE_4_TO,             0x07, 0xF9, 2, 0, 0, DATETIME_FIELD},
+  {SCHEDULE_5_STAT,           0x07, 0xFA, 1, 0, 0, UINT_FIELD},
+  {SCHEDULE_5_FROM,           0x07, 0xFB, 2, 0, 0, DATETIME_FIELD},
+  {SCHEDULE_5_TO,             0x07, 0xFC, 2, 0, 0, DATETIME_FIELD},
+  {SCHEDULE_6_STAT,           0x07, 0xFD, 1, 0, 0, UINT_FIELD},
+  {SCHEDULE_6_FROM,           0x07, 0xFE, 2, 0, 0, DATETIME_FIELD},
+  {SCHEDULE_6_TO,             0x07, 0xFF, 2, 0, 0, DATETIME_FIELD},
+*/
+
+
+Und hier nochmals alle Adressen, die ich zum Auslesen gefunden habe (wobei einige als Command wieder zurück geschrieben werden können, siehe weiter oben).
+
+Dadurch dass ich zwei EP600 im Verbund habe, sind einige Adressen verschoben, so gibt es bei mir jetzt in der (Master) EP600 nicht mehr 5 PV Informationen, sondern 7 Einträge.
+Die zwei DC PV Informationen der zweiten EP600 wandern zur ersten und verschieben die Adressen der AC PV Information um einige Stellen nach hinten.
+
+Zusätzlich gibt es jetzt auch Adressen, die wohl den "Lastausgleich" zwischen den beiden EP600 beschreiben (AC_OUTPUT_POWER). Da bin ich aber noch nicht ganz schlau geworden. Die Werte sind immer positiv ich weiß daher nicht, ob sie von der #1 zur #2 wandern, oder retour ...
+
+Was noch auffällt, die Anzeige beim Eigenverbrauch (CONSUMTION) ist immer zu hoch, solange beide Batterie-Türme geladen werden. Da wird nicht mehr nur der Eigenverbrauch angezeigt, sondern zusätzlich die Leistung der zweiten EP600 mit addiert ...
+
+
+// { FIELD_NAME, PAGE, OFFSET, SIZE, SCALE (if scale is needed e.g. decimal value, defaults to 0) , ENUM (if data is enum, defaults to 0) , FIELD_TYPE }
+static device_field_data_t bluetti_device_state[] = {
+ 
+      0x00, 0x2B {TOTAL_BATTERY_PERCENT,     0x00, 0x66, 1, 0, 0, UINT_FIELD},
+      0x00, 0x0A {DEVICE_TYPE,               0x00, 0x6E, 6, 0, 0, SWAP_STRING_FIELD},
+  //  0x00, 0x11 {SERIAL_NUMBER,             0x00, 0x74, 4, 0 ,0, SN_FIELD},
+ 
+                 {CONSUMPTION,               0x00, 0x8E, 1, 0, 0, UINT_FIELD},
+                 {PRODUCTION,                0x00, 0x90, 1, 0, 0, UINT_FIELD},
+  //  0x00, 0x29 {POWER_GENERATION,          0x00, 0x90, 1, 3, 0, DECIMAL_FIELD},
+                 {GRID,                      0x00, 0x92, 1, 0, 0, UINT_FIELD},
+                 {POWER_OFFSET,              0x00, 0x94, 1, 0, 0, INT_FIELD},      // POWER_OFFSET GRID
+                 {PRODUCTION_OFFSET,         0x00, 0x95, 1, 0, 0, INT_FIELD},      // POWER_OFFSET PRODUCTION ?
+  /*
+                 {TOTAL_AC_CONSUMPTION,      0x00, 0x98, 1, 1, 0, DECIMAL_FIELD},  // Load consumption
+                 {TOTAL_GRID_CONSUMPTION,    0x00, 0x9C, 1, 1, 0, DECIMAL_FIELD},  // Grid consumption stats
+                 {TOTAL_GRID_FEED,           0x00, 0x9E, 1, 1, 0, DECIMAL_FIELD},
+  */
+  /*  
+                 {PV1_TYPE,                  0x04, 0xBB, 1, 0, 0, UINT_FIELD},     // 100 = DC PV
+                 {PV1_POWER,                 0x04, 0xBC, 1, 0, 0, INT_FIELD},
+                 {PV1_VOLTAGE,               0x04, 0xBD, 1, 1, 0, DECIMAL_FIELD},
+                 {PV1_CURRENT,               0x04, 0xBE, 1, 1, 0, DECIMAL_FIELD},
+  
+                 {PV2_TYPE,                  0x04, 0xC3, 1, 0, 0, UINT_FIELD},     // 100 = DC PV
+                 {PV2_POWER,                 0x04, 0xC4, 1, 0, 0, INT_FIELD},
+                 {PV2_VOLTAGE,               0x04, 0xC5, 1, 1, 0, DECIMAL_FIELD},
+                 {PV2_CURRENT,               0x04, 0xC6, 1, 1, 0, DECIMAL_FIELD},
+ 
+                 {PV3_TYPE,                  0x04, 0xCB, 1, 0, 0, UINT_FIELD},     // 100 = DC PV
+                 {PV3_POWER,                 0x04, 0xCC, 1, 0, 0, INT_FIELD},
+                 {PV3_VOLTAGE,               0x04, 0xCD, 1, 1, 0, DECIMAL_FIELD},
+                 {PV3_CURRENT,               0x04, 0xCE, 1, 1, 0, DECIMAL_FIELD},
+
+                 {PV4_TYPE,                  0x04, 0xD3, 1, 0, 0, UINT_FIELD},     // 100 = DC PV
+                 {PV4_POWER,                 0x04, 0xD4, 1, 0, 0, INT_FIELD},
+                 {PV4_VOLTAGE,               0x04, 0xD5, 1, 1, 0, DECIMAL_FIELD},
+                 {PV4_CURRENT,               0x04, 0xD6, 1, 1, 0, DECIMAL_FIELD},
+  */
+ 
+                 {PV5_TYPE,                  0x04, 0xDB, 1, 0, 0, UINT_FIELD},     // 101 = AC PV
+                 {PV5_POWER,                 0x04, 0xDC, 1, 0, 0, INT_FIELD},
+  //             {PV5_VOLTAGE,               0x04, 0xDD, 1, 1, 0, DECIMAL_FIELD},
+  //             {PV5_CURRENT,               0x04, 0xDE, 1, 1, 0, DECIMAL_FIELD},
+                 {PV6_TYPE,                  0x04, 0xE3, 1, 0, 0, UINT_FIELD},     // 101 = AC PV
+                 {PV6_POWER,                 0x04, 0xE4, 1, 0, 0, INT_FIELD},
+  
+  //             {PV6_VOLTAGE,               0x04, 0xE5, 1, 1, 0, DECIMAL_FIELD},
+  //             {PV6_CURRENT,               0x04, 0xE6, 1, 1, 0, DECIMAL_FIELD},
+  
+                 {PV7_TYPE,                  0x04, 0xEB, 1, 0, 0, UINT_FIELD},     // 101 = AC PV
+                 {PV7_POWER,                 0x04, 0xEC, 1, 0, 0, INT_FIELD},
+  //             {PV7_VOLTAGE,               0x04, 0xED, 1, 1, 0, DECIMAL_FIELD},
+  //             {PV7_CURRENT,               0x04, 0xEE, 1, 1, 0, DECIMAL_FIELD},
+ 
+      0x00, 0x4A {GRID_FREQUENCY,            0x05, 0x14, 1, 1, 0, DECIMAL_FIELD},
+
+      nu         {GRID_POWER_PHASE1,         0x05, 0x21, 1, 0, 0, UINT_FIELD},
+      nu         {GRID_VOLTAGE_PHASE1,       0x05, 0x22, 1, 1, 0, DECIMAL_FIELD},
+      nu         {GRID_CURRENT_PHASE1,       0x05, 0x23, 1, 1, 0, DECIMAL_FIELD},
+
+      nu         {GRID_POWER_PHASE2,         0x05, 0x27, 1, 0, 0, UINT_FIELD},
+      nu         {GRID_VOLTAGE_PHASE2,       0x05, 0x28, 1, 1, 0, DECIMAL_FIELD},
+      nu         {GRID_CURRENT_PHASE2,       0x05, 0x29, 1, 1, 0, DECIMAL_FIELD},
+
+      nu         {GRID_POWER_PHASE3,         0x05, 0x2D, 1, 0, 0, UINT_FIELD},
+      nu         {GRID_VOLTAGE_PHASE3,       0x05, 0x2E, 1, 1, 0, DECIMAL_FIELD},
+      nu         {GRID_CURRENT_PHASE3,       0x05, 0x2F, 1, 1, 0, DECIMAL_FIELD},
+ 
+      nu         {CONSUMPTION_POWER_PHASE1,  0x05, 0x96, 1, 0, 0, UINT_FIELD},
+  //  nu         {CONSUMPTION_VOLTAGE_PHASE1,0x05, 0x97, 1, 1, 0, DECIMAL_FIELD},
+  //  nu         {CONSUMPTION_CURRENT_PHASE1,0x05, 0x98, 1, 1, 0, DECIMAL_FIELD},
+
+      nu         {CONSUMPTION_POWER_PHASE2,  0x05, 0x9C, 1, 0, 0, UINT_FIELD},
+  //  nu         {CONSUMPTION_VOLTAGE_PHASE2,0x05, 0x9D, 1, 1, 0, DECIMAL_FIELD},
+  //  nu         {CONSUMPTION_CURRENT_PHASE2,0x05, 0x9E, 1, 1, 0, DECIMAL_FIELD},
+
+      nu         {CONSUMPTION_POWER_PHASE3,  0x05, 0xA2, 1, 0, 0, UINT_FIELD},
+  //  nu         {CONSUMPTION_VOLTAGE_PHASE3,0x05, 0xA3, 1, 1, 0, DECIMAL_FIELD},
+  //  nu         {CONSUMPTION_CURRENT_PHASE3,0x05, 0xA4, 1, 1, 0, DECIMAL_FIELD},
+ 
+
+ 
+  // ? EP600 #2 or power transfer between EP #1 and EP #2 ?
+  //             {AC_OUTPUT_FREQUENCY,       0x05, 0xDC, 1, 1, 0, DECIMAL_FIELD},
+      nu         {AC_OUTPUT_POWER_PHASE1,    0x05, 0xE6, 1, 0, 0, INT_FIELD},
+  //  nu         {AC_OUTPUT_VOLTAGE_PHASE1,  0x05, 0xE7, 1, 1, 0, DECIMAL_FIELD},
+  //  nu         {AC_OUTPUT_CURRENT_PHASE1,  0x05, 0xE8, 1, 1, 0, DECIMAL_FIELD},
+      nu         {AC_OUTPUT_POWER_PHASE2,    0x05, 0xED, 1, 0, 0, INT_FIELD},
+  //  nu         {AC_OUTPUT_VOLTAGE_PHASE2,  0x05, 0xEE, 1, 1, 0, DECIMAL_FIELD},
+  //  nu         {AC_OUTPUT_CURRENT_PHASE2,  0x05, 0xEF, 1, 1, 0, DECIMAL_FIELD},
+      nu         {AC_OUTPUT_POWER_PHASE3,    0x05, 0xF4, 1, 0, 0, INT_FIELD},
+  //  nu         {AC_OUTPUT_VOLTAGE_PHASE3,  0x05, 0xF5, 1, 1, 0, DECIMAL_FIELD},
+  //  nu         {AC_OUTPUT_CURRENT_PHASE3,  0x05, 0xF6, 1, 1, 0, DECIMAL_FIELD},
+ 
+                 {DATETIME,                  0x07, 0xD1, 6, 0, 0, DATETIME_FIELD}, // date time in format YYMMDDhhmmss
+                 {SYSTEM_SWITCH,             0x07, 0xDB, 1, 0, 0, BOOL_FIELD}, // BOOL_FIELD_COM
+                 {SOC_MIN_PERCENTAGE,        0x07, 0xE6, 1, 0, 0, UINT_FIELD}, // UINT_FIELD_COM
+                 {SOC_MAX_PERCENTAGE,        0x07, 0xE7, 1, 0, 0, UINT_FIELD}, // UINT_FIELD_COM
+                 {TIME_OF_USE,               0x07, 0xED, 1, 0, 0, BOOL_FIELD}, // BOOL_FIELD_COM
+															   
+//               {BUZZER_SWITCH,             0x08, 0x12, 1, 0, 0, BOOL_FIELD}, // BOOL_FIELD_COM
+                 {CHARGE_FROM_GRID,          0x08, 0x9F, 1, 0, 0, BOOL_FIELD}, // BOOL_FIELD_COM
+                 {FEED_INTO_GRID,            0x08, 0xA0, 1, 0, 0, BOOL_FIELD}, // BOOL_FIELD_COM
+															  
+                 {AC_INPUT_POWER_MAX,        0x08, 0xA5, 1, 0, 0, UINT_FIELD}, // UINT_FIELD_COM
+                 {AC_INPUT_CURRENT_MAX,      0x08, 0xA6, 1, 0, 0, UINT_FIELD}, // UINT_FIELD_COM
+                 {AC_OUTPUT_POWER_MAX,       0x08, 0xA7, 1, 0, 0, UINT_FIELD}, // UINT_FIELD_COM
+                 {AC_OUTPUT_CURRENT_MAX,     0x08, 0xA8, 1, 0, 0, UINT_FIELD}, // UINT_FIELD_COM
+															  
+                 {SYSTEM_SWITCH_RECOVERY,    0x08, 0xB2, 1, 0, 0, BOOL_FIELD}, // BOOL_FIELD_COM
+                 {GRID_SELF_ADAPTION,        0x08, 0xB1, 1, 0, 0, BOOL_FIELD}, // BOOL_FIELD_COM
+  
+  
+  

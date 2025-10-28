@@ -87,7 +87,7 @@
     static device_field_data_t bluetti_device_state[] =
       {
         /*Page 0x00 Core */                                              // poll 0
-                                                                         // adr  len  bytes last offs
+                                                                                      // adr   len  bytes last offs
         {DEVICE_TYPE,               0x00, 0x0A,  6, 0, 0,             STRING_FIELD},  //  10   12   12    0x0F
         { ADR_0x0010_UINT,          0x00, 0x10,  1, 0, 0,             UINT_FIELD},    //  16    2   14    0x10
         {SERIAL_NUMBER,             0x00, 0x11,  4, 0 ,0,             SN_FIELD},      //  17    8   22    0x14
@@ -160,14 +160,17 @@
         { ADR_0x0066_UINT,          0x00, 0x66,  1, 0, 0,             UINT_FIELD},    // 102    2   24  0x66
         { ADR_0x0067_UINT,          0x00, 0x67,  1, 0, 0,             UINT_FIELD},    // 103    2   26  0x67
         { ADR_0x0068_UINT,          0x00, 0x68,  1, 0, 0,             UINT_FIELD},    // 104    2   28  0x68
-        {CELL_VOLTAGES,             0x00, 0x69, 16, 2, CELL_VOLTAGES, DECIMAL_ARRAY}, // 105   32   60  0x88
-        { ADR_0x0089_UINT,          0x00, 0x89,  1, 0, 0,             UINT_FIELD},    // 106    2   62  0x89
-        { ADR_0x008A_UINT,          0x00, 0x8A,  1, 0, 0,             UINT_FIELD},    // 107    2   64  0x8A
-        { ADR_0x008B_UINT,          0x00, 0x8B,  1, 0, 0,             UINT_FIELD},    // 108    2   66  0x8B
-        { ADR_0x008C_UINT,          0x00, 0x8C,  1, 0, 0,             UINT_FIELD},    // 109    2   68  0x8C
-        { ADR_0x008D_UINT,          0x00, 0x8D,  1, 0, 0,             UINT_FIELD},    // 110    2   70  0x8D
-        { ADR_0x008E_UINT,          0x00, 0x8E,  1, 0, 0,             UINT_FIELD},    // 111    2   72  0x8E
-        { ADR_0x008F_UINT,          0x00, 0x8F,  1, 0, 0,             UINT_FIELD},    // 112    2   74  0x8F
+        {CELL1VOLTAGES,             0x00, 0x69, 16, 2, CELL1VOLTAGES, DECIMAL_ARRAY}, // 105   32   60  0x78
+        //{CELL2VOLTAGES,             0x00, 0x79, 16, 2, CELL2VOLTAGES, DECIMAL_ARRAY}, // 137   32   60  0x88
+        //{CELL3VOLTAGES,             0x00, 0x89, 16, 2, CELL3VOLTAGES, DECIMAL_ARRAY}, // 169   32   60  0x98
+        //{CELL4VOLTAGES,             0x00, 0x99, 16, 2, CELL3VOLTAGES, DECIMAL_ARRAY}, // 191   32   60  0xA8
+        //{ ADR_0x0089_UINT,          0x00, 0x89,  1, 0, 0,             UINT_FIELD},    // 106    2   62  0x89
+        //{ ADR_0x008A_UINT,          0x00, 0x8A,  1, 0, 0,             UINT_FIELD},    // 107    2   64  0x8A
+        //{ ADR_0x008B_UINT,          0x00, 0x8B,  1, 0, 0,             UINT_FIELD},    // 108    2   66  0x8B
+        //{ ADR_0x008C_UINT,          0x00, 0x8C,  1, 0, 0,             UINT_FIELD},    // 109    2   68  0x8C
+        //{ ADR_0x008D_UINT,          0x00, 0x8D,  1, 0, 0,             UINT_FIELD},    // 110    2   70  0x8D
+        //{ ADR_0x008E_UINT,          0x00, 0x8E,  1, 0, 0,             UINT_FIELD},    // 111    2   72  0x8E
+        //{ ADR_0x008F_UINT,          0x00, 0x8F,  1, 0, 0,             UINT_FIELD},    // 112    2   74  0x8F
                                                                           // poll 6 end
                                                                           // poll 2
         {UPS_MODE,                  0x0B, 0xB9,  1, 0, UPS_MODE_t,    ENUM_FIELD},     // 3001    2    2  0xB9
@@ -202,7 +205,7 @@
         { ADR_0x0BBB_UINT,          0x0B, 0xBB, 1, 0, 0,              UINT_FIELD},     // 3003    2    6  0xBB
         {SPLIT_PHASE_ON,            0x0B, 0xBC, 1, 0, 0,              BOOL_FIELD},     // 3004    2    8  0xBC
         {SPLIT_PHASE_MACHINE_MODE,  0x0B, 0xBD, 1, 0, DO_NOTHING_t,   ENUM_FIELD},     // 3005    2   10  0xBD
-        {PACK_NUM,                  0x0B, 0xBE, 1, 0, 0,              BOOL_FIELD},     // 3006    2   12  0xBE
+        {PACK_NUM_SET,              0x0B, 0xBE, 1, 0, 0,              BOOL_FIELD},     // 3006    2   12  0xBE
         {AC_OUTPUT_CTRL,            0x0B, 0xBF, 1, 0, OUT_MODE_t,     ENUM_FIELD},     // 3007    2   14  0xBF
         {DC_OUTPUT_CTRL,            0x0B, 0xC0, 1, 0, 0,              BOOL_FIELD},     // 3008    2   16  0xC0
         { ADR_0x0BC1_UINT,          0x0B, 0xC1, 1, 0, 0,              UINT_FIELD},     // 3003    2   18  0xC1
@@ -230,11 +233,11 @@
       {
         {FIELD_UNDEFINED, 0x00, 0x0A, 0x28 ,0 , 0, TYPE_UNDEFINED},
         {FIELD_UNDEFINED, 0x00, 0x46, 0x15 ,0 , 0, TYPE_UNDEFINED},
+        {FIELD_UNDEFINED, 0x00, 0x5B, 0x4D ,0 , 0, TYPE_UNDEFINED},
         {FIELD_UNDEFINED, 0x0B, 0xB9, 0x10 ,0 , 0, TYPE_UNDEFINED},
         {FIELD_UNDEFINED, 0x0B, 0xDA, 0x03 ,0 , 0, TYPE_UNDEFINED},
-        {FIELD_UNDEFINED, 0x0B, 0xF5, 0x07 ,0 , 0, TYPE_UNDEFINED},
+        {FIELD_UNDEFINED, 0x0B, 0xF5, 0x07 ,0 , 0, TYPE_UNDEFINED}
         //Pack Polling
-        {FIELD_UNDEFINED, 0x00, 0x5B, 0x25 ,0 , 0, TYPE_UNDEFINED}
         //{FIELD_UNDEFINED, 0x00, 0x5B, 0x25 ,0 , 0, TYPE_UNDEFINED}
       };
       #ifdef SIM_BLUETTI
@@ -242,19 +245,28 @@
             {
               {DEVICE_TYPE,     DC_OUTPUT_ON},
               {AC_OUTPUT_MODE,  ADR_0x005A_UINT},
+              {PACK_NUM_MAX,    CELL4VOLTAGES},
               {UPS_MODE,        BATTERY_RANGE_END},
               {ADR_0x0BDA_UINT, BLUETOOTH_CONNECTED},
-              {AUTO_SLEEP_MODE, ADR_0x0BFB_UINT},
-              {PACK_NUM_MAX,    ADR_0x008F_UINT}
+              {AUTO_SLEEP_MODE, ADR_0x0BFB_UINT}
             };
         #endif
   #endif
 #endif
-/* MD0.1.0 - 2025-01-18 - md - extend functionality for AC300
- * - add and synchronize enums and fields in Device_AC300.h and DeviceType.h
- * - extend simulation in BTooth.cpp
- * - update and add evaluation of 'ENUM_FIELD' and 'DECIMAL_ARRAY'
- *///------------------------------------------------------------------------------------
-/* MD0.0.1 - 2025-01-11 - md - initial version
- * - change code format to MD format for better readability
- *///------------------------------------------------------------------------------------
+
+// - changelog --------------------------------------------------------------------------
+  /*
+   * MD0.1.1 - 2025-10-28 - add scanning of unknown modbus adresses of AC300
+   * - add fields with names including address - example ADR_0x0BF7_UINT
+   *   files: Device_AC300.h, DeviceType.h, MQTT.cpp, BTooth.cpp
+   *///------------------------------------------------------------------------------------
+  /*
+   * MD0.1.0 - 2025-01-18 - md - extend functionality for AC300
+   * - add and synchronize enums and fields in Device_AC300.h and DeviceType.h
+   * - extend simulation in BTooth.cpp
+   * - update and add evaluation of 'ENUM_FIELD' and 'DECIMAL_ARRAY'
+   *///------------------------------------------------------------------------------------
+  /*
+   * MD0.0.1 - 2025-01-11 - md - initial version
+   * - change code format to MD format for better readability
+   *///------------------------------------------------------------------------------------

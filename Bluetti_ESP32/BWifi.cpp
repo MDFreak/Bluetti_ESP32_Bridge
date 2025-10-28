@@ -116,8 +116,8 @@ void initBWifi(bool resetWifi)
                             #endif
                         #endif
     	});
-    if (!wifiManager.autoConnect("Bluetti_ESP32"))
-      {
+    //if (!wifiManager.autoConnect("Bluetti_ESP32")) {
+    if (!wifiManager.autoConnect("MAMD-HomeG","ElaNanniRalf3")) {
         ESP.restart();
       }
     if (shouldSaveConfig)

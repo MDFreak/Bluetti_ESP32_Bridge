@@ -24,20 +24,26 @@ float    parse_decimal_field(uint8_t data[], uint8_t scale)
   }
 String   parse_decimal_array(uint8_t data[], uint8_t size, uint8_t scale, uint8_t type)
   {
-    String tmp = "{ ";
-    switch (type)
+    String tmp = " { ";
+      //switch (type)
+      //  {
+      //    case CELL1VOLTAGES: tmp.concat(" 'Cell1Voltages': "); break;
+      //    case CELL2VOLTAGES: tmp.concat(" 'Cell2Voltages': "); break;
+      //    case CELL3VOLTAGES: tmp.concat(" 'Cell3Voltages': "); break;
+      //    case CELL4VOLTAGES: tmp.concat(" 'Cell4Voltages': "); break;
+      //    default:            break;
+      //  }
+
+    for (uint8_t i = 0; i < (size * 2); i += 2)
       {
-        case CELL_VOLTAGES: tmp.concat(" { 'CellVolt': ["); break;
-        default:            break;
-      }
-    for (uint8_t i = 0; i < (size * 2); i + 2)
-      {
+        //Serial.printf(" i=%d data: %02X %02X\n", i, data[i], data[i+1]);
         if (i > 0) { tmp.concat(", "); }
-        tmp.concat("Decimal('");
+        tmp.concat( "\"C" + String(i/2) + "\": ");
         tmp.concat(parse_decimal_field(&data[i], scale));
-        tmp.concat("')");
+        tmp.concat("");
+        //Serial.printf(" i=%d tmp: ", i); Serial.println(tmp); Serial.flush();
       }
-    tmp.concat("]}");
+    tmp.concat(" }");
     return tmp;
         //'cell_voltage': [Decimal('3.35'), Decimal('3.36'), Decimal('3.35'), Decimal('3.35'), Decimal('3.36'), Decimal('3.35'), Decimal('3.35'), Decimal('3.35'), Decimal('3.35'), Decimal('3.35'), Decimal('3.35'), Decimal('3.36'), Decimal('3.36'), Decimal('3.35'), Decimal('3.35'),
         //                 Decimal('3.35')]}

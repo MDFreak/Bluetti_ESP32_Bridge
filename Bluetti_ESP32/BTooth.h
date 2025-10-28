@@ -37,7 +37,9 @@
   extern bool isBTconnected();
   extern unsigned long getLastBTMessageTime();
 #endif
-/* MD0.0.1 - 2025-01-11 - md - initial version
+// - changelog --------------------------------------------------------------------------
+/*
+ * MD0.0.1 - 2025-01-11 - md - initial version
  * - new define USE_DISPLAY (-> platform.ini)
  *   ndef USE_DISPLAY = no display implemented
  * - change code format to MD format for better readability

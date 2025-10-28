@@ -1,27 +1,28 @@
 ## About
-This is an ESP32 based Bluetooth to MQTT Bride for BLUETTI power stations. The project is based on https://github.com/warhammerkid/bluetti_mqtt
-The code is tested on a AC300. Other Powerstations should also work but are untested yet. The discussion on https://diysolarforum.com/threads/monitoring-bluetti-systems.37870/ was a great help for understanding the protocol. 
+This is an ESP32 based Bluetooth to MQTT Bride for BLUETTI power stations. The project is based on https://github.com/warhammerkid/bluetti_mqtt and forked from https://github.com/mariolukas/Bluetti_ESP32_Bridge
+The code is tested on a AC300. Other Powerstations may also work but not tested by me. The discussion on https://diysolarforum.com/threads/monitoring-bluetti-systems.37870/ was a great help for understanding the protocol.
 
-## Community
+## Community of Mario Lukas
 Join the Discord Server https://discord.gg/fWDSBTCVmB
 
-## Features
+## Features V0.1.1
 
 * easy configuration with WiFi manager
-* display support OLED 128x64 
+* display support OLED 128x64
   * tested ESP32 WROOM with display: https://github.com/LilyGO/TTGO-T2-ESP32
 * mqtt support
 * support for BLUETTI power stations
-  * AC300 (tested)
+  * AC300 (in use)
   * AC200 (tested)
   * EB3A (tested)
   * EP500 (untested)
   * EP500P (tested)
   * EP600 (some values still missing)
 * supported BLUETTI functions
-  * commands
+  * commands (not activated yet)
     * ac output on/off
     * dc output on/off
+    * other controls - not specified here and not tested
   * states
     * ac input power
     * dc input power
@@ -33,6 +34,7 @@ Join the Discord Server https://discord.gg/fWDSBTCVmB
     * device type
     * power generation
     * total battery percent
+    * other states - not specified here
 
 ## Getting Started
 
@@ -45,7 +47,7 @@ Change at least the device type to fit your Bluetti device.
 
 #### Arduino IDE
 
-You will need to install a board support package for your ESP32. Additionally the following libraries are needed: 
+You will need to install a board support package for your ESP32. Additionally the following libraries are needed:
 
 * https://github.com/tzapu/WiFiManager
 * https://github.com/knolleary/pubsubclient
@@ -139,18 +141,18 @@ States are published to
 
 ## Display
 Config Display:
-* By default, display is disabled. 
-* Configurations (customize of file Bluetti_ESP32/config.h): 
+* By default, display is disabled.
+* Configurations (customize of file Bluetti_ESP32/config.h):
   * Enable display: uncomment #define DISPLAYSSD1306 1
   * Enable reset of display on init: uncomment DISPLAY_RST_PORT
     * Known needed for LoRa TTGO v1.0
-  * set SCL & SDA ports: default ports are set to SCL=4 & SDA5, to change update DISPLAY_SCL_PORT and DISPLAY_SDA_PORT 
+  * set SCL & SDA ports: default ports are set to SCL=4 & SDA5, to change update DISPLAY_SCL_PORT and DISPLAY_SDA_PORT
 
 Display functionality:
 * Show current assiged IP address (AP mode or normal)
 * Show different wifi connection logo, depending on the mode its in and wifi Strength in normal mode (4 bars)
-* Show the running time of the device in the format "11d12h15m" Currently max until 49 days as this is the time millis() is reset. 
-* Show status message, currently shows the init and running status, also BLEscan when scanning 
+* Show the running time of the device in the format "11d12h15m" Currently max until 49 days as this is the time millis() is reset.
+* Show status message, currently shows the init and running status, also BLEscan when scanning
 * a progressbar is available but currently not used anywhere. (to see where it can be used)
 * Show bluetooth icon status. Connected is static, blinking is trying to connect, together with message in case of scanning.
 * Show MQTT icon status. Connected is static, blinking is trying to connect.
@@ -164,6 +166,35 @@ Example display screen:
 * add full feature set to device files
 * adding support for SD-Card reader, for writing csv data to an sd-card
 * adding logging poll commands
+
+## CHANGELOG
+
+* MD0.1.1 - 2025-10-28 - add scanning of unknown modbus adresses of AC300
+  - add fields with names including address - example ADR_0x0BF7_UINT
+  - files: Device_AC300.h, DeviceType.h, MQTT.cpp, BTooth.cpp
+
+* MD0.1.0 - 2025-01-18 - md - extend functionality for AC300
+  - add and synchronize enums and fields in Device_AC300.h and DeviceType.h
+  - extend simulation in BTooth.cpp
+  - update and add evaluation of 'ENUM_FIELD' and 'DECIMAL_ARRAY'
+
+* MD0.0.2 - 2025-01-13 - simuting Bluetti data for MQTT
+  - introduce simulation for BT to implement MQTT without Bluetti
+    - new define SIM_BLUETTI (-> platform.ini)
+      used to block unused BT functions
+      and activate simulation function
+    - simulation starts in function 'handleBluetooth()' and uses
+      new function 'sendSIM_data()' to publish data
+      uses standard decoding methods
+    - works with 8 items
+    - add '#include "MQTT.h"' to Bluetooth.cpp
+    - set default data for connections
+    - introduce simulation for BT to implement MQTT without Bluetti
+
+* MD0.0.1 - 2025-01-11 - md - initial version
+  - new define USE_DISPLAY (-> platform.ini)
+    ndef USE_DISPLAY = no display implemented
+  - change code format to MD format for better readability
 
 ## Disclaimer
 
