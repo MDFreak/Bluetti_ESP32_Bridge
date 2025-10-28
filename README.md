@@ -1,4 +1,4 @@
-## About
+# About
 This is an ESP32 based Bluetooth to MQTT Bride for BLUETTI power stations. The project is based on https://github.com/warhammerkid/bluetti_mqtt and forked from https://github.com/mariolukas/Bluetti_ESP32_Bridge.
 The code is tested on a AC300. Other Powerstations may also work but not tested by me. The discussion on https://diysolarforum.com/threads/monitoring-bluetti-systems.37870/ was a great help for understanding the protocol.
 Community of Mario Lukas on Discord Server to join: https://discord.gg/fWDSBTCVmB
@@ -15,8 +15,12 @@ Community of Mario Lukas on Discord Server to join: https://discord.gg/fWDSBTCVm
   to see more detailed data of my Bluetti system, I join the
   hacking group to find out. 
 
+## 
+
+
+
 ## V0.1.1  
-#Added Features
+Added Features
 * Scan undocumented interface addresses to find out position of data.
   Names look like ADR_0x0208_UINT for page 0x02 and offset 0x08 
 * Those data are transfered via MQTT and automatically imported in HA
@@ -25,7 +29,31 @@ Community of Mario Lukas on Discord Server to join: https://discord.gg/fWDSBTCVm
 * update README.md to provide actual information for possible users  
 
 ## V0.1.0 
+Added Features
+* add and synchronize enums and fields in Device_AC300.h and DeviceType.h
+* extend simulation in BTooth.cpp
+* update and add evaluation of 'ENUM_FIELD' and 'DECIMAL_ARRAY'
 
+## V0.0.2
+* introduce simulation for BT to implement MQTT without Bluetti
+* new define SIM_BLUETTI (-> platform.ini)
+  used to block unused BT functions and activate simulation function
+* simulation starts in function 'handleBluetooth()' and uses
+  new function 'sendSIM_data()' to publish data uses standard decoding methods
+* works with 8 items
+* add '#include "MQTT.h"' to Bluetooth.cpp
+* set default data for connections
+* introduce simulation for BT to implement MQTT without Bluetti
+
+## V0.0.1   adapt 
+Import SW of Mario Lukas into my used system (VSCode & PlatformIO) and libraries.  
+* Change code format to MD format for better readability and code folding
+* Move DEFINEs and configurations to file platformio.ini
+  define USE_DISPLAY  1  -> platform.ini ->  -DUSE_DISPLAY=1
+* Part of program and names are adapted to my ideas and program flow
+* The workflow of Mario Lukas is still basic  
+
+## Forked funktionality  =  FEATURES in README from Mario Lukas
 * easy configuration with WiFi manager
 * display support OLED 128x64
   * tested ESP32 WROOM with display: https://github.com/LilyGO/TTGO-T2-ESP32
