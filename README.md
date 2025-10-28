@@ -3,7 +3,7 @@ This is an ESP32 based Bluetooth to MQTT Bride for BLUETTI power stations. The p
 The code is tested on a AC300. Other Powerstations may also work but not tested by me. The discussion on https://diysolarforum.com/threads/monitoring-bluetti-systems.37870/ was a great help for understanding the protocol.
 Community of Mario Lukas on Discord Server to join: https://discord.gg/fWDSBTCVmB
 
-# Sence and motivation for this project 
+## Sence and motivation for this project 
 * We build a stand alone tinyhouse in the outback.
   We will only use this house time by time.
 * The whole equipment is to be controlled remote from far away.
@@ -15,7 +15,7 @@ Community of Mario Lukas on Discord Server to join: https://discord.gg/fWDSBTCVm
   to see more detailed data of my Bluetti system, I join the
   hacking group to find out. 
 
-## V0.1.1 MDFreak 
+## V0.1.1  
 #Added Features
 * Scan undocumented interface addresses to find out position of data.
   Names look like ADR_0x0208_UINT for page 0x02 and offset 0x08 
@@ -24,6 +24,7 @@ Community of Mario Lukas on Discord Server to join: https://discord.gg/fWDSBTCVm
   files: Device_AC300.h, DeviceType.h, MQTT.cpp, BTooth.cpp
 * update README.md to provide actual information for possible users  
 
+## V0.1.0 
 
 * easy configuration with WiFi manager
 * display support OLED 128x64
