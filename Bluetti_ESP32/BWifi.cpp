@@ -23,7 +23,7 @@ String lastMsg = "";
 
 bool msgViewerDetails = false;
 bool shouldSaveConfig = false;
-int wifiReconnectCounter = 0;
+int  wifiReconnectCounter = 0;
 
 //char mqtt_server[40] = "127.0.0.1";
 char mqtt_server[40] = "10.0.0.111";  // md 0.1.0

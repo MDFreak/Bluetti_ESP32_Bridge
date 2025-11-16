@@ -1,10 +1,11 @@
-/* -- BTooth.cpp -- MD0.0.2----------------------------------------------------------------------*/
+/* -- BTooth.cpp -- MD0.1.1 ----------------------------------------------------------------------*/
 #include "BluettiConfig.h"
 #include "BTooth.h"
 #include "utils.h"
 #include "PayloadParser.h"
 #include "BWifi.h"
 #include "MQTT.h"
+
 #ifdef USE_DISPLAY
     #include "display.h"
   #endif
@@ -24,6 +25,7 @@ QueueHandle_t sendQueue;
 
 unsigned long lastBTMessage = 0;
 
+// Callbacks
 class MyClientCallback : public BLEClientCallbacks
   {
     void onConnect(BLEClient* pclient)
@@ -68,19 +70,6 @@ class BluettiAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
           }
       }
   };
-void initBluetooth()
-  {
-    BLEDevice::init("");
-    BLEScan* pBLEScan = BLEDevice::getScan();
-    pBLEScan->setAdvertisedDeviceCallbacks(new BluettiAdvertisedDeviceCallbacks());
-    pBLEScan->setInterval(1349);
-    pBLEScan->setWindow(449);
-    pBLEScan->setActiveScan(true);
-    pBLEScan->start(5, false);
-
-    commandHandleQueue = xQueueCreate( 5, sizeof(bt_command_t ) );
-    sendQueue = xQueueCreate( 5, sizeof(bt_command_t) );
-  }
 static void notifyCallback(
     BLERemoteCharacteristic* pBLERemoteCharacteristic,
     uint8_t* pData,
@@ -109,6 +98,20 @@ static void notifyCallback(
       {
         parse_bluetooth_data(command_handle.page, command_handle.offset, pData, length);
       }
+  }
+// Initialize Bluetooth and start scanning
+void initBluetooth()
+  {
+    BLEDevice::init("");
+    BLEScan* pBLEScan = BLEDevice::getScan();
+    pBLEScan->setAdvertisedDeviceCallbacks(new BluettiAdvertisedDeviceCallbacks());
+    pBLEScan->setInterval(1349);
+    pBLEScan->setWindow(449);
+    pBLEScan->setActiveScan(true);
+    pBLEScan->start(5, false);
+
+    commandHandleQueue = xQueueCreate( 5, sizeof(bt_command_t ) );
+    sendQueue = xQueueCreate( 5, sizeof(bt_command_t) );
   }
 
 bool connectToServer()
@@ -179,6 +182,7 @@ bool connectToServer()
 
     return true;
   }
+// Driver functions to handle Bluetooth communication
 void handleBTCommandQueue()
   {
     bt_command_t command;
@@ -196,12 +200,8 @@ void handleBTCommandQueue()
         pRemoteWriteCharacteristic->writeValue((uint8_t*)&command, sizeof(command),true);
       };
   }
-void sendBTCommand(bt_command_t command)
-  {
-      bt_command_t cmd = command;
-      xQueueSend(sendQueue, &cmd, 0);
-  }
 #ifdef SIM_BLUETTI
+    // Only for simulation of Bluetti device, send fixed data directly without BT
     void sendSIM_data(int poll_idx)
       {
         uint8_t val[36];
@@ -617,7 +617,7 @@ void sendBTCommand(bt_command_t command)
                       //                                      bluetti_device_state[i].f_enum  ));
                       //Serial.println();
                   break;
-                  //case CELL2VOLTAGES:             // DECIMAL_ARRAY
+                //case CELL2VOLTAGES:             // DECIMAL_ARRAY
                   //    val[0]=01; val[1]=0x4A +1; val[2]=01; val[3]=0x4A +1;   // -> 3,30/3,31/../3,44/3,45 (014A/014B/../0154/0155)
                   //    val[4]=01; val[5]=0x4B +1; val[6]=01; val[7]=0x4B +1;
                   //    val[8]=01; val[9]=0x4C +1; val[10]=01; val[11]=0x4C +1;
@@ -636,7 +636,7 @@ void sendBTCommand(bt_command_t command)
                   //      //                                      bluetti_device_state[i].f_enum  ));
                   //      //Serial.println();
                   //  break;
-                  //case CELL3VOLTAGES:             // DECIMAL_ARRAY
+                //case CELL3VOLTAGES:             // DECIMAL_ARRAY
                   //    val[0]=01; val[1]=0x4A +2; val[2]=01; val[3]=0x4A +2;   // -> 3,30/3,31/../3,44/3,45 (014A/014B/../0154/0155)
                   //    val[4]=01; val[5]=0x4B +2; val[6]=01; val[7]=0x4B +2;
                   //    val[8]=01; val[9]=0x4C +2; val[10]=01; val[11]=0x4C +2;
@@ -655,7 +655,7 @@ void sendBTCommand(bt_command_t command)
                   //      //                                      bluetti_device_state[i].f_enum  ));
                   //      //Serial.println();
                   //  break;
-                  //case CELL4VOLTAGES:             // DECIMAL_ARRAY
+                //case CELL4VOLTAGES:             // DECIMAL_ARRAY
                   //    val[0]=01; val[1]=0x4A +3; val[2]=01; val[3]=0x4A +3;   // -> 3,30/3,31/../3,44/3,45 (014A/014B/../0154/0155)
                   //    val[4]=01; val[5]=0x4B +3; val[6]=01; val[7]=0x4B +3;
                   //    val[8]=01; val[9]=0x4C +3; val[10]=01; val[11]=0x4C +3;
@@ -717,6 +717,138 @@ void sendBTCommand(bt_command_t command)
                     //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
                   //// page 0x0B -> 2816+
+                case ADR_0x0100_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x00 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0051_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0101_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x01 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0102_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x02 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0103_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x03 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0104_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x04 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0105_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x05 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0106_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x06 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0107_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x07 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0108_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x08 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0109_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x09 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x010A_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x0A + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x010B_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x0B + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x010C_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x0C + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x010D_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x0D + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x010E_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x0E + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x010F_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x0F + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0110_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x10 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      Serial.print("[BT] SIM - ADR_0x0110_UINT: ");
+                      Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0111_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x11 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0112_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x12 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0113_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x13 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0114_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x14 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0115_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x15 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0116_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x16 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0117_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x17 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0118_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x18 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x0119_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x19 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x011A_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x1A + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x011B_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x1B + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x011C_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x1C + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x011D_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x1D + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x011E_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x1E + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
+                case ADR_0x011F_UINT:           // UINT_FIELD
+                    val[0]=0x01; val[1]=0x1F + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                  break;
                 case UPS_MODE:                  // ENUM_FIELD AC300
                     val[0]=0x00; val[1]=0x04;   // ->4 (0004)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_enum_field(val, bluetti_device_state[i].f_type)));
@@ -889,7 +1021,7 @@ void handleBluetooth()
 
                 xQueueSend(commandHandleQueue, &command, portMAX_DELAY);
                 xQueueSend(sendQueue, &command, portMAX_DELAY);
-              #else
+              #else // SIM_BLUETTI
                 Serial.print(millis()); Serial.print(" -> sendSIM_data "); Serial.println(pollTick);
                 sendSIM_data( pollTick);
               #endif
@@ -908,6 +1040,51 @@ void handleBluetooth()
         BLEDevice::getScan()->start(0);
       }
   }
+#ifdef SIM_BLUETTI
+    // Only for simulation of Bluetti device, send fixed data directly without BT
+    void sendSIM_comm(int poll_idx)
+      {
+        uint8_t val[36];
+        //for (int i = 0; i < sizeof(bluetti_device_state) / sizeof(device_field_data_t); i++)
+        for (int i = bluetti_poll_idx[poll_idx].f_start; i <= bluetti_poll_idx[poll_idx].f_end; i++)
+          {
+            switch(bluetti_device_state[i].f_name)
+              {
+                case DEVICE_TYPE:               // STRINGFILD AC300                  //sprintf((char*) val, "AC300");
+                    val[0]=0x41; val[1]=0x43; val[2]=0x33; val[3]=0x30; val[4]=0x30; val[5]=0x00;  // -> AC300
+                    val[6]=0x31; val[7]=0x32; val[8]=0x33; val[9]=0x34; val[10]=0x35; val[11]=0x36;
+                    publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                      //Serial.print("[BT] SIM -  publish DEVICE_TYPE: ");
+                      //Serial.println(parse_string_field((uint8_t*) val)); Serial.println();
+                  break;
+                case ADR_0x0010_UINT:           // UINT_FIELD AC300
+                    val[0]=0x03; val[1]=0xFA;    // -> 1018 (03FA)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      Serial.print("[BT] SIM - ADR_0x0010_UINT: ");
+                      Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case SERIAL_NUMBER:             // SN_FIELD   AC300
+                    char sn[16];                // 2235000574654
+                    val[0]=0x52; val[1]=0xBE; val[2]=0x60; val[3]=0x6A;
+                    val[4]=0x02; val[5]=0x08; val[6]=0x00; val[7]=0x00;
+                    sprintf(sn, "%lld", parse_serial_field(val));
+                    publishTopic(bluetti_device_state[i].f_name, String(sn));
+                      //Serial.print("[BT] SIM - publish SERIAL_NUMBER: ");
+                      //Serial.println(String(sn)); Serial.println();
+                  break;
+              }
+            usleep(200000);
+          }
+        simTick++;
+        if (simTick >= 6) { simTick = 0; }
+      }
+  #endif
+void sendBTCommand(bt_command_t command)
+  {
+      bt_command_t cmd = command;
+      xQueueSend(sendQueue, &cmd, 0);
+  }
+// internal functions
 void btResetStack()
   {
     connected=false;
@@ -922,13 +1099,11 @@ unsigned long getLastBTMessageTime()
   }
 
 // - changelog --------------------------------------------------------------------------
-  /*
-   * MD0.1.1 - 2025-10-28 - add scanning of unknown modbus adresses of AC300
+  /* MD0.1.1 - 2025-10-28 - add scanning of unknown modbus adresses of AC300
    * - add fields with names including address - example ADR_0x0BF7_UINT
    *   files: Device_AC300.h, DeviceType.h, MQTT.cpp, BTooth.cpp
    *///------------------------------------------------------------------------------------
-  /*
-   * MD0.0.2 - 2025-01-13 - simuting Bluetti data for MQTT
+  /* MD0.0.2 - 2025-01-13 - simuting Bluetti data for MQTT
    * - introduce simulation for BT to implement MQTT without Bluetti
    *   - new define SIM_BLUETTI (-> platform.ini)
    *     used to block unused BT functions
@@ -941,8 +1116,7 @@ unsigned long getLastBTMessageTime()
    * - set default data for connections
    * - introduce simulation for BT to implement MQTT without Bluetti
    */// -----------------------------------------------------------------------------------
-  /*
-   * MD0.0.1 - 2025-01-11 - md - initial version
+  /* MD0.0.1 - 2025-01-11 - md - initial version
    * - new define USE_DISPLAY (-> platform.ini)
    *   ndef USE_DISPLAY = no display implemented
    * - change code format to MD format for better readability

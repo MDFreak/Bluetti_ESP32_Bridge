@@ -1,9 +1,10 @@
-/* -- DeviceType.h -- MD0.0.1 ---------------------------------------------------------*/
+/* -- DeviceType.h -- MD0.1.1 ---------------------------------------------------------*/
 #ifndef __DEVICE_TYPE_H__
   #define __DEVICE_TYPE_H__
   #include "Arduino.h"
 
-  enum field_types {
+  enum field_types
+    {
       UINT_FIELD,
       BOOL_FIELD,
       ENUM_FIELD,
@@ -13,8 +14,9 @@
       VERSION_FIELD,
       SN_FIELD,
       TYPE_UNDEFINED
-   };
-  enum field_names {
+    };
+  enum field_names
+    {
       DEVICE_TYPE,
       ADR_0x0010_UINT,
       SERIAL_NUMBER,
@@ -22,27 +24,27 @@
       ADR_0x0013_UINT,
       ARM_VERSION,
       DSP_VERSION,
-      ADR_0x001B_UINT,
-      ADR_0x001C_UINT,
-      ADR_0x001D_UINT,
-      ADR_0x001E_UINT,
-      ADR_0x001F_UINT,
-      ADR_0x0020_UINT,
-      ADR_0x0021_UINT,
-      ADR_0x0022_UINT,
-      ADR_0x0023_UINT,
+          ADR_0x001B_UINT,
+          ADR_0x001C_UINT,
+          ADR_0x001D_UINT,
+          ADR_0x001E_UINT,
+          ADR_0x001F_UINT,
+          ADR_0x0020_UINT,
+          ADR_0x0021_UINT,
+          ADR_0x0022_UINT,
+          ADR_0x0023_UINT,
       DC_INPUT_POWER,
       AC_INPUT_POWER,
       AC_OUTPUT_POWER,
       DC_OUTPUT_POWER,
-      ADR_0x0028_UINT,
+          ADR_0x0028_UINT,
       POWER_GENERATION,
-      ADR_0x002A_UINT,
+          ADR_0x002A_UINT,
       TOTAL_BATTERY_PERCENT,
-      ADR_0x002C_UINT,
-      ADR_0x002D_UINT,
-      ADR_0x002E_UINT,
-      ADR_0x002F_UINT,
+          ADR_0x002C_UINT,
+          ADR_0x002D_UINT,
+          ADR_0x002E_UINT,
+          ADR_0x002F_UINT,
       DC_OUTPUT_ON,
       AC_OUTPUT_ON,
 
@@ -57,61 +59,93 @@
       INTERNAL_CURRENT_THREE,
       INTERNAL_POWER_THREE,
       AC_INPUT_FREQUENCY,
-      ADR_0x0051_UINT,
-      ADR_0x0052_UINT,
-      ADR_0x0053_UINT,
-      ADR_0x0054_UINT,
-      ADR_0x0055_UINT,
+          ADR_0x0051_UINT,
+          ADR_0x0052_UINT,
+          ADR_0x0053_UINT,
+          ADR_0x0054_UINT,
+          ADR_0x0055_UINT,
       INTERNAL_DC_INPUT_VOLTAGE,
       INTERNAL_DC_INPUT_POWER,
       INTERNAL_DC_INPUT_CURRENT,
-      ADR_0x0059_UINT,
-      ADR_0x005A_UINT,
+          ADR_0x0059_UINT,
+          ADR_0x005A_UINT,
       PACK_NUM_MAX,
       TOTAL_BATTERY_VOLTAGE,
       TOTAL_BATTERY_CURRENT,
-      ADR_0x005E_UINT,
-      ADR_0x005F_UINT,
+          ADR_0x005E_UINT,
+          ADR_0x005F_UINT,
       PACK_NUM,
       PACK_STATUS,
       PACK_VOLTAGE,
       PACK_BATTERY_PERCENT,
-      ADR_0x0064_UINT,
-      ADR_0x0065_UINT,
-      ADR_0x0066_UINT,
-      ADR_0x0067_UINT,
-      ADR_0x0068_UINT,
+          ADR_0x0064_UINT,
+          ADR_0x0065_UINT,
+          ADR_0x0066_UINT,
+          ADR_0x0067_UINT,
+          ADR_0x0068_UINT,
       CELL1VOLTAGES,
       CELL2VOLTAGES,
       CELL3VOLTAGES,
       CELL4VOLTAGES,
-      //ADR_0x0089_UINT,
-      //ADR_0x008A_UINT,
-      //ADR_0x008B_UINT,
-      //ADR_0x008C_UINT,
-      //ADR_0x008D_UINT,
-      //ADR_0x008E_UINT,
-      //ADR_0x008F_UINT,
+          //ADR_0x0089_UINT,
+          //ADR_0x008A_UINT,
+          //ADR_0x008B_UINT,
+          //ADR_0x008C_UINT,
+          //ADR_0x008D_UINT,
+          //ADR_0x008E_UINT,
+          //ADR_0x008F_UINT,
+          ADR_0x0100_UINT,
+          ADR_0x0101_UINT,
+          ADR_0x0102_UINT,
+          ADR_0x0103_UINT,
+          ADR_0x0104_UINT,
+          ADR_0x0105_UINT,
+          ADR_0x0106_UINT,
+          ADR_0x0107_UINT,
+          ADR_0x0108_UINT,
+          ADR_0x0109_UINT,
+          ADR_0x010A_UINT,
+          ADR_0x010B_UINT,
+          ADR_0x010C_UINT,
+          ADR_0x010D_UINT,
+          ADR_0x010E_UINT,
+          ADR_0x010F_UINT,
+          ADR_0x0110_UINT,
+          ADR_0x0111_UINT,
+          ADR_0x0112_UINT,
+          ADR_0x0113_UINT,
+          ADR_0x0114_UINT,
+          ADR_0x0115_UINT,
+          ADR_0x0116_UINT,
+          ADR_0x0117_UINT,
+          ADR_0x0118_UINT,
+          ADR_0x0119_UINT,
+          ADR_0x011A_UINT,
+          ADR_0x011B_UINT,
+          ADR_0x011C_UINT,
+          ADR_0x011D_UINT,
+          ADR_0x011E_UINT,
+          ADR_0x011F_UINT,
 
       UPS_MODE,
-      ADR_0x0BBA_UINT,
-      ADR_0x0BBB_UINT,
+          ADR_0x0BBA_UINT,
+          ADR_0x0BBB_UINT,
       SPLIT_PHASE_ON,
       SPLIT_PHASE_MACHINE_MODE,
       PACK_NUM_SET,
       AC_OUTPUT_CTRL,
       DC_OUTPUT_CTRL,
-      ADR_0x0BC1_UINT,
-      ADR_0x0BC2_UINT,
+          ADR_0x0BC1_UINT,
+          ADR_0x0BC2_UINT,
       GRID_CHARGE_ON,
-      ADR_0x0BC4_UINT,
+          ADR_0x0BC4_UINT,
       TIME_CONTROL_ON,
-      ADR_0x0BC6_UINT,
+          ADR_0x0BC6_UINT,
       BATTERY_RANGE_START,
       BATTERY_RANGE_END,
 
-      ADR_0x0BDA_UINT,
-      ADR_0x0BDB_UINT,
+          ADR_0x0BDA_UINT,
+          ADR_0x0BDB_UINT,
       BLUETOOTH_CONNECTED,
       AUTO_SLEEP_MODE,
 
@@ -144,16 +178,17 @@
       BATTERY_MIN_PERCENTAGE,   // Discharge lower limit
       AC_CHARGE_MAX_PERCENTAGE,  // Percentage to which point battery will be charged with AC
       AUTOSLEEP,
-      ADR_0x0BF6_UINT,
-      ADR_0x0BF7_UINT,
-      ADR_0x0BF8_UINT,
-      ADR_0x0BF9_UINT,
-      ADR_0x0BFA_UINT,
-      ADR_0x0BFB_UINT,
+          ADR_0x0BF6_UINT,
+          ADR_0x0BF7_UINT,
+          ADR_0x0BF8_UINT,
+          ADR_0x0BF9_UINT,
+          ADR_0x0BFA_UINT,
+          ADR_0x0BFB_UINT,
       FIELD_UNDEFINED,
       FIELD_MAX
-  };
-  typedef struct device_field_data {
+    };
+  typedef struct device_field_data
+    {
       enum field_names f_name;
       uint8_t f_page;
       uint8_t f_offset;
@@ -161,22 +196,20 @@
       int8_t f_scale;
       int8_t f_enum;
       enum field_types f_type;
-  } device_field_data_t;
+    } device_field_data_t;
   #ifdef SIM_BLUETTI
-      typedef struct device_field_idx {
+      typedef struct device_field_idx
+        {
           uint8_t f_start;
           uint8_t f_end;
-      } device_field_idx_t;
+        } device_field_idx_t;
     #endif
 #endif
-
 // - changelog --------------------------------------------------------------------------
-  /*
-   * MD0.1.1 - 2025-10-28 - add scanning of unknown modbus adresses of AC300
+  /* MD0.1.1 - 2025-10-28 - add scanning of unknown modbus adresses of AC300
    * - add fields with names including address - example ADR_0x0BF7_UINT
    *   files: Device_AC300.h, DeviceType.h, MQTT.cpp, BTooth.cpp
    *///------------------------------------------------------------------------------------
-  /*
-   * MD0.0.1 - 2025-01-11 - md - initial version
+  /* MD0.0.1 - 2025-01-11 - md - initial version
    * - change code format to MD format for better readability
    *///------------------------------------------------------------------------------------

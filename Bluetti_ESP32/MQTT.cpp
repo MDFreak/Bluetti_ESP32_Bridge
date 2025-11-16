@@ -12,14 +12,17 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
-WiFiClient mqttClient;
-PubSubClient client(mqttClient);
-int publishErrorCount = 0;
+WiFiClient    mqttClient;
+PubSubClient  client(mqttClient);
+int           publishErrorCount = 0;
 unsigned long lastMQTTMessage = 0;
 unsigned long previousDeviceStatePublish = 0;
 unsigned long previousDeviceStateStatusPublish = 0;
 unsigned long previousMqttReconnect = 0;
 
+//There is no reflection to do string to enum
+//There are a couple of ways to work aroung it... but basically are just "case" statements
+//Mapped them in a fuction
 String map_field_name(enum field_names f_name)
   {
     switch(f_name)
@@ -108,6 +111,38 @@ String map_field_name(enum field_names f_name)
         //case ADR_0x008E_UINT:           return "adr_0x008E_uint";           break;
         //case ADR_0x008F_UINT:           return "adr_0x008F_uint";           break;
 
+        case ADR_0x0100_UINT:             return "adr_0x0100_uint";                  break;
+        case ADR_0x0101_UINT:             return "adr_0x0101_uint";                  break;
+        case ADR_0x0102_UINT:             return "adr_0x0102_uint";                  break;
+        case ADR_0x0103_UINT:             return "adr_0x0103_uint";                  break;
+        case ADR_0x0104_UINT:             return "adr_0x0104_uint";                  break;
+        case ADR_0x0105_UINT:             return "adr_0x0105_uint";                  break;
+        case ADR_0x0106_UINT:             return "adr_0x0106_uint";                  break;
+        case ADR_0x0107_UINT:             return "adr_0x0107_uint";                  break;
+        case ADR_0x0108_UINT:             return "adr_0x0108_uint";                  break;
+        case ADR_0x0109_UINT:             return "adr_0x0109_uint";                  break;
+        case ADR_0x010A_UINT:             return "adr_0x010A_uint";                  break;
+        case ADR_0x010B_UINT:             return "adr_0x010B_uint";                  break;
+        case ADR_0x010C_UINT:             return "adr_0x010C_uint";                  break;
+        case ADR_0x010D_UINT:             return "adr_0x010D_uint";                  break;
+        case ADR_0x010E_UINT:             return "adr_0x010E_uint";                  break;
+        case ADR_0x010F_UINT:             return "adr_0x010F_uint";                  break;
+        case ADR_0x0110_UINT:             return "adr_0x0110_uint";                  break;
+        case ADR_0x0111_UINT:             return "adr_0x0111_uint";                  break;
+        case ADR_0x0112_UINT:             return "adr_0x0113_uint";                  break;
+        case ADR_0x0113_UINT:             return "adr_0x0114_uint";                  break;
+        case ADR_0x0114_UINT:             return "adr_0x0115_uint";                  break;
+        case ADR_0x0116_UINT:             return "adr_0x0116_uint";                  break;
+        case ADR_0x0117_UINT:             return "adr_0x0117_uint";                  break;
+        case ADR_0x0118_UINT:             return "adr_0x0118_uint";                  break;
+        case ADR_0x0119_UINT:             return "adr_0x0119_uint";                  break;
+        case ADR_0x011A_UINT:             return "adr_0x011A_uint";                  break;
+        case ADR_0x011B_UINT:             return "adr_0x011B_uint";                  break;
+        case ADR_0x011C_UINT:             return "adr_0x011C_uint";                  break;
+        case ADR_0x011D_UINT:             return "adr_0x011D_uint";                  break;
+        case ADR_0x011E_UINT:             return "adr_0x011E_uint";                  break;
+        case ADR_0x011F_UINT:             return "adr_0x011F_uint";                  break;
+
         case UPS_MODE:                  return "ups_mode";                  break;
         case ADR_0x0BBA_UINT:           return "adr_0x0BBA_uint";           break;
         case ADR_0x0BBB_UINT:           return "adr_0x0BBB_uint";           break;
@@ -171,9 +206,6 @@ String map_field_name(enum field_names f_name)
           break;
       }
   }
-//There is no reflection to do string to enum
-//There are a couple of ways to work aroung it... but basically are just "case" statements
-//Wapped them in a fuction
 String map_command_value(String command_name, String value)
   {
     String toRet = value;
@@ -211,7 +243,7 @@ String map_command_value(String command_name, String value)
       }
     return toRet;
   }
-// Callback function
+// Callback function to forward commands received from MQTT-broker
 void callback(char* topic, byte* payload, unsigned int length)
   {
     payload[length] = '\0';
@@ -250,18 +282,7 @@ void callback(char* topic, byte* payload, unsigned int length)
 
     sendBTCommand(command);
   }
-void subscribeTopic(enum field_names field_name)
-  {
-    #ifdef DEBUG
-        Serial.println("[MQTT] subscribe to topic: " +  map_field_name(field_name));
-      #endif
-    char subscribeTopicBuf[512];
-    ESPBluettiSettings settings = get_esp32_bluetti_settings();
-
-    sprintf(subscribeTopicBuf, "bluetti/%s/command/%s", settings.bluetti_device_id, map_field_name(field_name).c_str() );
-    client.subscribe(subscribeTopicBuf);
-    lastMQTTMessage = millis();
-  }
+// Publish a topic to MQTT-broker, device infos
 void publishTopic(enum field_names field_name, String value)
   {
     char publishTopicBuf[1024];
@@ -347,6 +368,19 @@ void publishDeviceStateStatus()
         Serial.println("[MQTT] PublishingDeviceStateStatus: reached end");
       #endif
   }
+// Initialize MQTT and subscribe to topics for commands
+void subscribeTopic(enum field_names field_name)
+  {
+    #ifdef DEBUG
+        Serial.println("[MQTT] subscribe to topic: " +  map_field_name(field_name));
+      #endif
+    char subscribeTopicBuf[512];
+    ESPBluettiSettings settings = get_esp32_bluetti_settings();
+
+    sprintf(subscribeTopicBuf, "bluetti/%s/command/%s", settings.bluetti_device_id, map_field_name(field_name).c_str() );
+    client.subscribe(subscribeTopicBuf);
+    lastMQTTMessage = millis();
+  }
 void initMQTT()
   {
     enum field_names f_name;
@@ -388,6 +422,7 @@ void initMQTT()
       }
     Serial.println("[MQTT] init MQTT end");
   };
+// Driver function to handle MQTT connection and publishing
 void handleMQTT()
   {
     ESPBluettiSettings settings = get_esp32_bluetti_settings();
@@ -430,6 +465,7 @@ void handleMQTT()
       }
     client.loop();
   }
+// internal function to check MQTT connection status
 bool isMQTTconnected()
   {
     if (client.connected()) { return true; }
