@@ -75,23 +75,31 @@ void initBWifi(bool resetWifi)
     WiFiManagerParameter custom_bluetti_device("bluetti", "AC300-1", bluetti_device_id, 40);
 
     WiFiManager wifiManager;
-
+    #if (SET_STATIC_IP>0)
+        wifiManager.setSTAStaticIPConfig(IPAddress(NET_IP0, NET_IP1, DEV_IP2, DEV_IP3), IPAddress(NET_IP0, NET_IP1, DEV_GW2, DEV_GW3), IPAddress(255,255,0,0));
+      #endif
     if (resetWifi)
       {
         wifiManager.resetSettings();
         ESPBluettiSettings defaults;
         wifiConfig = defaults;
+        //wifiManager.setAPStaticIPConfig(IPAddress(NET_IP0, NET_IP1, AP_IP2, AP_IP3), IPAddress(NET_IP0, NET_IP1, AP_IP2,AP_GW3), IPAddress(255,255,0,0));
+        //wifiManager.setSTAStaticIPConfig(IPAddress(NET_IP0, NET_IP1, DEV_IP2, DEV_IP3), IPAddress(NET_IP0, NET_IP1, DEV_GW2, DEV_GW3), IPAddress(255,255,0,0));
         eeprom_saveconfig();
       }
     else if (wifiConfig.salt != EEPROM_SALT)
       {
-        Serial.println("Invalid settings in EEPROM, trying with defaults");
+        //Serial.print("wifiConfig.salt: ");Serial.print(wifiConfig.salt ); Serial.print(" EEPROM_SALT: "); Serial.println(EEPROM_SALT);
+        //Serial.println("Invalid settings in EEPROM, trying with defaults");
         ESPBluettiSettings defaults;
         wifiConfig = defaults;
+        //wifiManager.setAPStaticIPConfig(IPAddress(NET_IP0, NET_IP1, AP_IP2, AP_IP3), IPAddress(NET_IP0, NET_IP1, AP_IP2,AP_GW3), IPAddress(255,255,0,0));
+        //wifiManager.setSTAStaticIPConfig(IPAddress(NET_IP0, NET_IP1, DEV_IP2, DEV_IP3), IPAddress(NET_IP0, NET_IP1, DEV_GW2, DEV_GW3), IPAddress(255,255,0,0));
       }
     else
       {
         wifiManager.setConfigPortalTimeout(300);
+        //wifiManager.setConfigPortalTimeout(90);    // MD0.1.2
       }
     wifiManager.setSaveConfigCallback(saveConfigCallback);
 
@@ -116,8 +124,13 @@ void initBWifi(bool resetWifi)
                             #endif
                         #endif
     	});
+    //sets config for a static IP for login and AP
+    #if (SET_STATIC_IP>0)
+        //wifiManager.setAPStaticIPConfig(IPAddress(NET_IP0, NET_IP1, AP_IP2, AP_IP3), IPAddress(NET_IP0, NET_IP1, AP_IP2,AP_GW3), IPAddress(255,255,255,0));
+        wifiManager.setSTAStaticIPConfig(IPAddress(NET_IP0, NET_IP1, DEV_IP2, DEV_IP3), IPAddress(NET_IP0, NET_IP1, DEV_GW2, DEV_GW3), IPAddress(255,255,0,0));
+      #endif
     //if (!wifiManager.autoConnect("Bluetti_ESP32")) {
-    if (!wifiManager.autoConnect("MAMD-HomeG","ElaNanniRalf3")) {
+    if (!wifiManager.autoConnect("ESP_Bridge","ElaNanniRalf3")) {
         ESP.restart();
       }
     if (shouldSaveConfig)
@@ -151,8 +164,10 @@ void initBWifi(bool resetWifi)
     WiFi.setAutoReconnect(true);
 
     Serial.println(F(""));
-    Serial.println(F("IP address: "));
+    Serial.print(F("IP address: "));
     Serial.println(WiFi.localIP());
+    Serial.print(F("MAC: "));
+    Serial.println(WiFi.macAddress());
     #ifdef USE_DISPLAY
         #ifdef DISPLAYSSD1306
             wrDisp_IP(WiFi.localIP().toString().c_str());
@@ -386,6 +401,9 @@ void AddtoMsgView(String data)
       }
   }
 // - changelog --------------------------------------------------------------------------
+/* MD0.1.2 - 2025-10-28 - add scanning of unknown modbus adresses of AC300
+ * - add static IP config for device login and access point to BWifi.cpp
+ *   move details as define to platformio.ini
 /* MD0.0.2 - 2025-01-13 - simuting Bluetti data for MQTT
  * - set default data for connections
  * -

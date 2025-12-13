@@ -236,7 +236,7 @@
         {SPLIT_PHASE_ON,            0x0B, 0xBC,  1, 0, 0,             BOOL_FIELD},     // 3004    2    8  0xBC
         {SPLIT_PHASE_MACHINE_MODE,  0x0B, 0xBD,  1, 0, DO_NOTHING_t,  ENUM_FIELD},     // 3005    2   10  0xBD
         {PACK_NUM_SET,              0x0B, 0xBE,  1, 0, 0,             UINT_FIELD},     // 3006    2   12  0xBE
-        {AC_OUTPUT_CTRL,            0x0B, 0xBF,  1, 0, 0,             ENUM_FIELD},     // 3007    2   14  0xBF
+        {AC_OUTPUT_CTRL,            0x0B, 0xBF,  1, 0, 0,             BOOL_FIELD},     // 3007    2   14  0xBF
         {DC_OUTPUT_CTRL,            0x0B, 0xC0,  1, 0, 0,             BOOL_FIELD},     // 3008    2   16  0xC0
         { ADR_0x0BC1_UINT,          0x0B, 0xC1,  1, 0, 0,             UINT_FIELD},     // 3003    2   18  0xC1
         { ADR_0x0BC2_UINT,          0x0B, 0xC2,  1, 0, 0,             UINT_FIELD},     // 3003    2   20  0xC2
@@ -270,7 +270,7 @@
         {SPLIT_PHASE_ON,            0x0B, 0xBC, 1, 0, 0,              BOOL_FIELD},     // 3004    2    8  0xBC
         {SPLIT_PHASE_MACHINE_MODE,  0x0B, 0xBD, 1, 0, DO_NOTHING_t,   ENUM_FIELD},     // 3005    2   10  0xBD
         {PACK_NUM_SET,              0x0B, 0xBE, 1, 0, 0,              BOOL_FIELD},     // 3006    2   12  0xBE
-        {AC_OUTPUT_CTRL,            0x0B, 0xBF, 1, 0, OUT_MODE_t,     ENUM_FIELD},     // 3007    2   14  0xBF
+        {AC_OUTPUT_CTRL,            0x0B, 0xBF, 1, 0, 0,              BOOL_FIELD},     // 3007    2   14  0xBF
         {DC_OUTPUT_CTRL,            0x0B, 0xC0, 1, 0, 0,              BOOL_FIELD},     // 3008    2   16  0xC0
         { ADR_0x0BC1_UINT,          0x0B, 0xC1, 1, 0, 0,              UINT_FIELD},     // 3003    2   18  0xC1
         { ADR_0x0BC2_UINT,          0x0B, 0xC2, 1, 0, 0,              UINT_FIELD},     // 3003    2   20  0xC2
