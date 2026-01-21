@@ -1,6 +1,13 @@
 // - changelog --------------------------------------------------------------------------
 
 #define CHANGELOG_H
+/* MD0.1.3 - 2025-12-13 - add Bluetti APEX300 support
+ * - introduce switching AC300 versus AP300 (=APEX300) and Handsfree 2 (both Bluetti BMS models)
+ * * files changed platformio.ini, BWifi.h, BWifi.cpp, BTooth.cpp, config.h, BluettiConfig.h, MQTT.cpp
+ * *               PayloadParser.h, MQTT.h
+ * * file names changed DeviceType.h -> DeviceType_AC300.h, DeviceType_AP300.h, DeviceType_Handsfree2.h
+ * * files new Device_AP300.h, Device_Handsfree2.h
+  */// -----------------------------------------------------------------------------------
 /* MD0.1.2 - 2025-10-28 - add scanning of unknown modbus adresses of AC300
  * - add static IP config for device login and access point to BWifi.cpp
  *   -> works only once - but not stored in EEPROM

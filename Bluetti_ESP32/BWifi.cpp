@@ -29,7 +29,11 @@ int  wifiReconnectCounter = 0;
 char mqtt_server[40] = "10.0.0.111";  // md 0.1.0
 char mqtt_port[6]  = "1883";
 //char bluetti_device_id[40] = "e.g. ACXXXYYYYYYYY";
-char bluetti_device_id[40] = "AC3002235000574654";  // md 0.1.0
+#ifdef AP300_ACTIVE
+    char bluetti_device_id[40] = "AP3002519000710250";  // md 0.1.0
+#else //(AC300_ACTIVE)
+    char bluetti_device_id[40] = "AC3002235000574654";  // md 0.1.0
+  #endif
 
 void saveConfigCallback ()
   {
@@ -39,7 +43,7 @@ ESPBluettiSettings wifiConfig;
 ESPBluettiSettings get_esp32_bluetti_settings()
   {
     return wifiConfig;
-    return wifiConfig;
+    //return wifiConfig;
   }
 void eeprom_read()
   {
@@ -47,10 +51,28 @@ void eeprom_read()
     EEPROM.begin(512);
     EEPROM.get(0, wifiConfig);
     EEPROM.end();
+    #ifdef DEBUG_BWIFI
+        Serial.print(F("MQTT Server: ")); Serial.println(wifiConfig.mqtt_server);
+        Serial.print(F("MQTT Port: ")); Serial.println(wifiConfig.mqtt_port);
+        Serial.print(F("MQTT Username: ")); Serial.println(wifiConfig.mqtt_username);
+        Serial.print(F("MQTT Password: ")); Serial.println(wifiConfig.mqtt_password);
+        Serial.print(F("Bluetti Device ID: ")); Serial.println(wifiConfig.bluetti_device_id);
+        Serial.print(F("OTA Username: ")); Serial.println(wifiConfig.ota_username);
+        Serial.print(F("OTA Password: ")); Serial.println(wifiConfig.ota_password);
+      #endif
   }
 void eeprom_saveconfig()
   {
     Serial.println(F("Saving Values to EEPROM"));
+    #ifdef DEBUG_BWIFI
+        Serial.print(F("MQTT Server: ")); Serial.println(wifiConfig.mqtt_server);
+        Serial.print(F("MQTT Port: ")); Serial.println(wifiConfig.mqtt_port);
+        Serial.print(F("MQTT Username: ")); Serial.println(wifiConfig.mqtt_username);
+        Serial.print(F("MQTT Password: ")); Serial.println(wifiConfig.mqtt_password);
+        Serial.print(F("Bluetti Device ID: ")); Serial.println(wifiConfig.bluetti_device_id);
+        Serial.print(F("OTA Username: ")); Serial.println(wifiConfig.ota_username);
+        Serial.print(F("OTA Password: ")); Serial.println(wifiConfig.ota_password);
+      #endif
     EEPROM.begin(512);
     EEPROM.put(0, wifiConfig);
     EEPROM.commit();
@@ -72,8 +94,16 @@ void initBWifi(bool resetWifi)
     WiFiManagerParameter custom_ota_username("ota_username", "OTA Username", "", 40);
     WiFiManagerParameter custom_ota_password("ota_password", "OTA Password", "", 40, "type=password");
     //WiFiManagerParameter custom_bluetti_device("bluetti", "Bluetti Bluetooth ID", bluetti_device_id, 40);
-    WiFiManagerParameter custom_bluetti_device("bluetti", "AC300-1", bluetti_device_id, 40);
-
+    #if (HANDSFREE_ACTIVE > 0)
+        WiFiManagerParameter custom_bluetti_device("bluetti", "Handsfree2", bluetti_device_id, 40);
+      #endif
+    #if (AP300_ACTIVE > 0)
+        WiFiManagerParameter custom_bluetti_device("bluetti", "AP300", bluetti_device_id, 40);
+      #endif
+    #if (AC300_ACTIVE > 0)
+        WiFiManagerParameter custom_bluetti_device("bluetti", "AC300", bluetti_device_id, 40);
+      #endif
+    //eeprom_saveconfig
     WiFiManager wifiManager;
     #if (SET_STATIC_IP>0)
         wifiManager.setSTAStaticIPConfig(IPAddress(NET_IP0, NET_IP1, DEV_IP2, DEV_IP3), IPAddress(NET_IP0, NET_IP1, DEV_GW2, DEV_GW3), IPAddress(255,255,0,0));
@@ -81,26 +111,37 @@ void initBWifi(bool resetWifi)
     if (resetWifi)
       {
         wifiManager.resetSettings();
-        ESPBluettiSettings defaults;
-        wifiConfig = defaults;
+        wifiManager.setAPStaticIPConfig(IPAddress(NET_IP0,NET_IP1,AP_IP2,AP_IP3),IPAddress(NET_IP0,NET_IP1,DEV_GW2,DEV_GW3),
+                                        IPAddress(255,255,0,0));
+        wifiManager.setSTAStaticIPConfig((NET_IP0,NET_IP1,DEV_IP2,DEV_IP3),IPAddress(NET_IP0,NET_IP1,DEV_GW2,DEV_GW3),
+                                        IPAddress(255,255,0,0), IPAddress(NET_IP0,NET_IP1,DEV_GW2,DEV_GW3));
+      }
+    #ifdef SET_STATIC_IP
+        wifiManager.setAPStaticIPConfig(IPAddress(NET_IP0,NET_IP1,AP_IP2,AP_IP3),IPAddress(NET_IP0,NET_IP1,DEV_GW2,DEV_GW3),
+                                        IPAddress(255,255,0,0));
+        wifiManager.setSTAStaticIPConfig((NET_IP0,NET_IP1,DEV_IP2,DEV_IP3),IPAddress(NET_IP0,NET_IP1,DEV_GW2,DEV_GW3),
+                                        IPAddress(255,255,0,0), IPAddress(NET_IP0,NET_IP1,DEV_GW2,DEV_GW3));
+      #endif
+    ESPBluettiSettings defaults;
+    wifiConfig = defaults;
         //wifiManager.setAPStaticIPConfig(IPAddress(NET_IP0, NET_IP1, AP_IP2, AP_IP3), IPAddress(NET_IP0, NET_IP1, AP_IP2,AP_GW3), IPAddress(255,255,0,0));
         //wifiManager.setSTAStaticIPConfig(IPAddress(NET_IP0, NET_IP1, DEV_IP2, DEV_IP3), IPAddress(NET_IP0, NET_IP1, DEV_GW2, DEV_GW3), IPAddress(255,255,0,0));
-        eeprom_saveconfig();
-      }
-    else if (wifiConfig.salt != EEPROM_SALT)
-      {
-        //Serial.print("wifiConfig.salt: ");Serial.print(wifiConfig.salt ); Serial.print(" EEPROM_SALT: "); Serial.println(EEPROM_SALT);
-        //Serial.println("Invalid settings in EEPROM, trying with defaults");
-        ESPBluettiSettings defaults;
-        wifiConfig = defaults;
-        //wifiManager.setAPStaticIPConfig(IPAddress(NET_IP0, NET_IP1, AP_IP2, AP_IP3), IPAddress(NET_IP0, NET_IP1, AP_IP2,AP_GW3), IPAddress(255,255,0,0));
-        //wifiManager.setSTAStaticIPConfig(IPAddress(NET_IP0, NET_IP1, DEV_IP2, DEV_IP3), IPAddress(NET_IP0, NET_IP1, DEV_GW2, DEV_GW3), IPAddress(255,255,0,0));
-      }
-    else
-      {
-        wifiManager.setConfigPortalTimeout(300);
-        //wifiManager.setConfigPortalTimeout(90);    // MD0.1.2
-      }
+    eeprom_saveconfig();
+          //  }
+          //else //if (wifiConfig.salt != EEPROM_SALT)
+          //  {
+                //Serial.print("wifiConfig.salt: ");Serial.print(wifiConfig.salt ); Serial.print(" EEPROM_SALT: "); Serial.println(EEPROM_SALT);
+                //Serial.println("Invalid settings in EEPROM, trying with defaults");
+          //    ESPBluettiSettings defaults;
+          //    wifiConfig = defaults;
+                //wifiManager.setAPStaticIPConfig(IPAddress(NET_IP0, NET_IP1, AP_IP2, AP_IP3), IPAddress(NET_IP0, NET_IP1, AP_IP2,AP_GW3), IPAddress(255,255,0,0));
+                //wifiManager.setSTAStaticIPConfig(IPAddress(NET_IP0, NET_IP1, DEV_IP2, DEV_IP3), IPAddress(NET_IP0, NET_IP1, DEV_GW2, DEV_GW3), IPAddress(255,255,0,0));
+          //  }
+        //else
+        //{
+        //  wifiManager.setConfigPortalTimeout(300);
+            //wifiManager.setConfigPortalTimeout(90);    // MD0.1.2
+        //}
     wifiManager.setSaveConfigCallback(saveConfigCallback);
 
     wifiManager.addParameter(&custom_mqtt_server);
@@ -130,7 +171,7 @@ void initBWifi(bool resetWifi)
         wifiManager.setSTAStaticIPConfig(IPAddress(NET_IP0, NET_IP1, DEV_IP2, DEV_IP3), IPAddress(NET_IP0, NET_IP1, DEV_GW2, DEV_GW3), IPAddress(255,255,0,0));
       #endif
     //if (!wifiManager.autoConnect("Bluetti_ESP32")) {
-    if (!wifiManager.autoConnect("ESP_Bridge","ElaNanniRalf3")) {
+    if (!wifiManager.autoConnect("MAMD-HomeG","ElaNanniRalf3")) {
         ESP.restart();
       }
     if (shouldSaveConfig)

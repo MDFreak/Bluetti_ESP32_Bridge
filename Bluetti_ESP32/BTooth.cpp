@@ -13,6 +13,15 @@ int pollTick = 0;
 #ifdef SIM_BLUETTI
     uint8_t simTick = 0;
   #endif
+#if (AP300_ACTIVE > 0)
+    char bluetti_device[40] = "AP3002519000710250";  // md 0.1.0
+  #endif
+#if (HANDSFREE_ACTIVE > 0)
+    char bluetti_device[40] = "Handsfree 22446000191559";  // md 0.1.3
+  #endif
+#if (AC300_ACTIVE > 0)
+    char bluetti_device[40] = "AC3002235000574654";  // md 0.1.3
+  #endif
 struct command_handle
   {
     uint8_t page;
@@ -56,15 +65,23 @@ class BluettiAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
     /* Called for each advertising BLE server. */
     void onResult(BLEAdvertisedDevice *advertisedDevice)
       {
-        Serial.print(F("[BLE] Advertised Device found: "));
-        Serial.println(advertisedDevice->toString().c_str());
-
         ESPBluettiSettings settings = get_esp32_bluetti_settings();
+        Serial.print(F("[BLE] Advertised Device found: ")); Serial.println(advertisedDevice->toString().c_str());
+          //Serial.print(F("[BLE] haveServiceUUID: "));         Serial.println(advertisedDevice->haveServiceUUID());
+          //Serial.print(F("[BLE] serviceUUID: "));             Serial.println(advertisedDevice->isAdvertisingService(serviceUUID));
+          //Serial.print(F("[BLE] getName: "));                 Serial.println(advertisedDevice->getName().c_str());
+          Serial.print(F("[BLE] bluetti_device: "));          Serial.println(bluetti_device);
         // We have found a device, let us now see if it contains the service we are looking for.
-        if (advertisedDevice->haveServiceUUID() && advertisedDevice->isAdvertisingService(serviceUUID) && (strcmp(advertisedDevice->getName().c_str(),settings.bluetti_device_id)==0) )
+        if ( /* advertisedDevice->haveServiceUUID() && advertisedDevice->isAdvertisingService(serviceUUID) && */(strcmp(advertisedDevice->getName().c_str(), bluetti_device)==0) )
           {
+            Serial.print("[MD] bluetti_device_id gefunden: "); Serial.println(bluetti_device);
             BLEDevice::getScan()->stop();
             bluettiDevice = advertisedDevice;
+            #ifdef DEBUG
+                Serial.print("doConnect to: ");
+                //Serial.println(advertisedDevice->toString().c_str());
+                Serial.println(bluettiDevice->toString().c_str());
+              #endif
             doConnect = true;
             doScan = true;
           }
@@ -112,6 +129,7 @@ void initBluetooth()
 
     commandHandleQueue = xQueueCreate( 5, sizeof(bt_command_t ) );
     sendQueue = xQueueCreate( 5, sizeof(bt_command_t) );
+    //doConnect = true;
   }
 
 bool connectToServer()
@@ -210,20 +228,20 @@ void handleBTCommandQueue()
           {
             switch(bluetti_device_state[i].f_name)
               {
-                case DEVICE_TYPE:               // STRINGFILD AC300                  //sprintf((char*) val, "AC300");
+                case DEVICE_TYPE:               // STRINGFILD AC300 / AP300
                     val[0]=0x41; val[1]=0x43; val[2]=0x33; val[3]=0x30; val[4]=0x30; val[5]=0x00;  // -> AC300
                     val[6]=0x31; val[7]=0x32; val[8]=0x33; val[9]=0x34; val[10]=0x35; val[11]=0x36;
                     publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
                       //Serial.print("[BT] SIM -  publish DEVICE_TYPE: ");
                       //Serial.println(parse_string_field((uint8_t*) val)); Serial.println();
                   break;
-                case ADR_0x0010_UINT:           // UINT_FIELD AC300
+                case ADR_0x0010_UINT:           // UINT_FIELD AC300 / AP300
                     val[0]=0x03; val[1]=0xFA;    // -> 1018 (03FA)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
                       Serial.print("[BT] SIM - ADR_0x0010_UINT: ");
                       Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case SERIAL_NUMBER:             // SN_FIELD   AC300
+                case SERIAL_NUMBER:             // SN_FIELD   AC300 /
                     char sn[16];                // 2235000574654
                     val[0]=0x52; val[1]=0xBE; val[2]=0x60; val[3]=0x6A;
                     val[4]=0x02; val[5]=0x08; val[6]=0x00; val[7]=0x00;
@@ -984,6 +1002,9 @@ void handleBluetooth()
       #endif
     if (doConnect == true)
       {
+        #ifdef DEBUG
+            Serial.println("try connect to Bluetti BLE Server...");
+          #endif
         if (connectToServer())
           {
             Serial.println(F("We are now connected to the Bluetti BLE Server."));

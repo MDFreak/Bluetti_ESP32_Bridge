@@ -41,8 +41,20 @@ void setup()
     #ifdef DEBUG
         Serial.println(F("nach initBWifi"));
       #endif
+    #ifdef DEBUG
+        Serial.println(F("vor initBluetooth"));
+      #endif
     initBluetooth();
+    #ifdef DEBUG
+        Serial.println(F("nach initBluetooth"));
+      #endif
+    #ifdef DEBUG
+        Serial.println(F("vor initMQTT"));
+      #endif
     initMQTT();
+    #ifdef DEBUG
+        Serial.println(F("nach initMQTT"));
+      #endif
     #ifdef USE_DISPLAY
         #ifdef DISPLAYSSD1306
             wrDisp_Status("Running!");
@@ -52,6 +64,7 @@ void setup()
         Serial.print(millis());
         Serial.println(" end setup");
       #endif
+    Serial.println(F("end setup"));
   }
 void loop()
   {
@@ -66,6 +79,8 @@ void loop()
   }
 
 // - changelog --------------------------------------------------------------------------
+  /* MD0.1.3 - 2025-12-13 - add scanning of unknown modbus adresses of AC300
+   *///------------------------------------------------------------------------------------
   /* MD0.1.1 - 2025-10-28 - add scanning of unknown modbus adresses of AC300
    * - add fields with names including address - example ADR_0x0BF7_UINT
    *   files: Device_AC300.h, DeviceType.h, MQTT.cpp, BTooth.cpp

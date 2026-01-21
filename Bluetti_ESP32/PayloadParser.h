@@ -1,7 +1,16 @@
 #ifndef PAYLOAD_PARSER_H
   #define PAYLOAD_PARSER_H
   #include "Arduino.h"
-  #include "DeviceType.h"
+  //#include "DeviceType.h"
+  #if (AP300_ACTIVE > 0)
+      #include "DeviceType_AP300.h"
+    #endif
+  #if (HANDSFREE_ACTIVE > 0)
+      #include "DeviceType_Handsfree2.h"
+    #endif
+  #if (AC300_ACTIVE > 0)
+      #include "DeviceType_AC300.h"
+    #endif
 
   #define HEADER_SIZE 4
   #define CHECKSUM_SIZE 2

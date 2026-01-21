@@ -1,7 +1,16 @@
 #ifndef MQTT_H
 #define MQTT_H
 #include "Arduino.h"
-#include "DeviceType.h"
+//#include "DeviceType.h"
+#if (AP300_ACTIVE > 0)
+    #include "DeviceType_AP300.h"
+  #endif
+#if (HANDSFREE_ACTIVE > 0)
+    #include "DeviceType_Handsfree2.h"
+  #endif
+#if (AC300_ACTIVE > 0)
+    #include "DeviceType_AC300.h"
+  #endif
 
 extern void publishTopic(enum field_names field_name, String value);
 extern void publishHAConfig();

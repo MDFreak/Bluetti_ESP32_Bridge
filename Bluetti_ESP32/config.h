@@ -25,7 +25,15 @@
   #define EEPROM_SALT 13374
 
   #define DEVICE_NAME "BLUETTI-MQTT" // MDFREAK-0.0.1
-  #define BLUETTI_TYPE AC300
+  #if (AP300_ACTIVE > 0)
+      #define BLUETTI_TYPE AP300
+    #endif
+  #if (HANDSFREE_ACTIVE > 0)
+      #define BLUETTI_TYPE HANDSFREE2
+    #endif
+  #if (AP300_ACTIVE > 0)
+      #define BLUETTI_TYPE AC300
+    #endif
 
   #ifndef SIM_BLUETTI
       #define BLUETOOTH_QUERY_MESSAGE_DELAY 5000
