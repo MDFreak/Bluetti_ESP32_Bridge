@@ -1,13 +1,48 @@
 // - changelog --------------------------------------------------------------------------
-
 #define CHANGELOG_H
 /* MD0.1.3 - 2025-12-13 - add Bluetti APEX300 support
+ * KNOWN ISSUES
+ * - Config page will not start, because config is always valid
+ *   Change of configuration only via recompile
+ *   - option is actually not necessary for me
+ * --------------------------------------------------------------------------------------
+ * TODO
+ * - complete and test new SW parts for support new Bluetti APEX300 and Handsfree2
+ * - fix issue above to ESP usable in different systems without recompile
+ * --------------------------------------------------------------------------------------
+ * Functional changes
+ * --------------------------------------------------------------------------------------
+ * - ESP8266 not supported anymore -> will be removed
+ *
+ * - system change in wifi management and static IP configuration
+ *   - flash storage use is changed and stabilized using static IP configuration
+ *     wifi config and access point use local net 10.0.x.x
+ *     Device static IP: 10.0.0.<last byte from platformio.ini DEV_IP3>
+ *                   GW: 10.0.139
+ *                   SN: 255.255.255.0
+ *     AP SSID: Bluetti_ESP32_AP / PW: ElaNanniRalf3
+ *                AP IP: 10.0.1.1
+ *            config IP: 10.0.1.2
+ *                   SN: 255.255.255.0
+ *
+ *   - struct ESPBluettiSettings - typedef is moved from BWifi.h to config.h
+ *     - defines all items of WiFi and configPortal
+ *     - initialized default values
+ *       exeption: last part of 'static_ip' is omitted -> is to be defined from platformio.ini
+ *     - all items will be saved in EEPROM (-> 'static_ip' complete)
+ *
+ *   - fork of WiFiManager(tzapu) to WiFiManager_MD(MDFreak = me) to implement necessary functions
+ *
  * - introduce switching AC300 versus AP300 (=APEX300) and Handsfree 2 (both Bluetti BMS models)
- * * files changed platformio.ini, BWifi.h, BWifi.cpp, BTooth.cpp, config.h, BluettiConfig.h, MQTT.cpp
- * *               PayloadParser.h, MQTT.h
- * * file names changed DeviceType.h -> DeviceType_AC300.h, DeviceType_AP300.h, DeviceType_Handsfree2.h
- * * files new Device_AP300.h, Device_Handsfree2.h
-  */// -----------------------------------------------------------------------------------
+ *   - file names changed DeviceType.h -> DeviceType_AC300.h, DeviceType_AP300.h, DeviceType_Handsfree2.h
+ *
+ *   TODO needs to be completed
+
+ * - files changed platformio.ini, BWifi.h, BWifi.cpp, BTooth.cpp, config.h, BluettiConfig.h, MQTT.cpp
+ *                 PayloadParser.h, MQTT.h, Bluetti_ESP32.ino, Changelog.h, WiFiManager.h, WiFiManager.cpp
+ *                 del DeviceType.h,
+ *                 add DeviceType_AC300.h, DeviceType_AP300.h, DeviceType_Handsfree2.h
+ */// -----------------------------------------------------------------------------------
 /* MD0.1.2 - 2025-10-28 - add scanning of unknown modbus adresses of AC300
  * - add static IP config for device login and access point to BWifi.cpp
  *   -> works only once - but not stored in EEPROM

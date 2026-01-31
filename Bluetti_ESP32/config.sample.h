@@ -10,9 +10,9 @@
 #define DISPLAY_SDA_PORT 5
 //Uncomment to toggle display reset on start, required for displays like LoRa TTGO v1.0
 //#define DISPLAY_RST_PORT 16
-  
 
-#define EEPROM_SALT 13374
+
+//#define EEPROM_SALT 13374
 
 #define DEVICE_NAME "BLUETTI-MQTT"
 #define BLUETTI_TYPE AC300

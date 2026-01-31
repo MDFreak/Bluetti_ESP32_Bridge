@@ -33,28 +33,19 @@ void setup()
             initDisplay();
           #endif
       #endif
-    #ifdef DEBUG
-        Serial.println(F("vor initBWifi"));
+    Serial.println(F("vor initBWifi"));
+    #if (RESET_WIFI > 0)
+        initBWifi(true);
+      #else
+        initBWifi(false);
       #endif
-    // initialize communication
-    initBWifi(false);
-    #ifdef DEBUG
-        Serial.println(F("nach initBWifi"));
-      #endif
-    #ifdef DEBUG
-        Serial.println(F("vor initBluetooth"));
-      #endif
+    Serial.println(F("nach initBWifi"));
+    Serial.println(F("vor initBluetooth"));
     initBluetooth();
-    #ifdef DEBUG
-        Serial.println(F("nach initBluetooth"));
-      #endif
-    #ifdef DEBUG
-        Serial.println(F("vor initMQTT"));
-      #endif
+    Serial.println(F("nach initBluetooth"));
+    Serial.println(F("vor initMQTT"));
     initMQTT();
-    #ifdef DEBUG
-        Serial.println(F("nach initMQTT"));
-      #endif
+    Serial.println(F("nach initMQTT"));
     #ifdef USE_DISPLAY
         #ifdef DISPLAYSSD1306
             wrDisp_Status("Running!");
