@@ -12,11 +12,10 @@ unsigned long timerDelay1 = 3000;
 void setup()
   {
     Serial.begin(115200);
-    // for development only - circle simulation of Bluetti comunication
-    #ifdef SIM_BLUETTI
-        Serial.print(millis());
-        Serial.println(" start setup");
-      #endif
+      #ifdef SIM_BLUETTI
+          Serial.print("SIM_BLUETTI is activ");
+        #endif
+    Serial.println("start setup");
     #ifdef RELAISMODE
         pinMode(RELAIS_PIN, OUTPUT);
         #ifdef DEBUG
@@ -27,33 +26,25 @@ void setup()
     #ifdef SLEEP_TIME_ON_BT_NOT_AVAIL
         esp_sleep_enable_timer_wakeup(SLEEP_TIME_ON_BT_NOT_AVAIL * 60 * 1000000ULL);
       #endif
-    // for use of local display
-    #ifdef USE_DISPLAY
-        #ifdef DISPLAYSSD1306
-            initDisplay();
-          #endif
-      #endif
-    Serial.println(F("vor initBWifi"));
-    #if (RESET_WIFI > 0)
-        initBWifi(true);
-      #else
-        initBWifi(false);
-      #endif
-    Serial.println(F("nach initBWifi"));
-    Serial.println(F("vor initBluetooth"));
+      // for use of local display
+      #ifdef USE_DISPLAY
+          #ifdef DISPLAYSSD1306
+              initDisplay();
+            #endif
+        #endif
+        //Serial.println(F("  vor initBWifi"));
+    initBWifi(RESET_WIFI);
+        //Serial.println(F("nach initBWifi"));
+        //Serial.println(F("vor initBluetooth"));
     initBluetooth();
-    Serial.println(F("nach initBluetooth"));
-    Serial.println(F("vor initMQTT"));
+        //Serial.println(F("nach initBluetooth"));
+        //Serial.println(F("vor initMQTT"));
     initMQTT();
-    Serial.println(F("nach initMQTT"));
+        //Serial.println(F("nach initMQTT"));
     #ifdef USE_DISPLAY
         #ifdef DISPLAYSSD1306
             wrDisp_Status("Running!");
           #endif
-      #endif
-    #ifdef SIM_BLUETTI
-        Serial.print(millis());
-        Serial.println(" end setup");
       #endif
     Serial.println(F("end setup"));
   }

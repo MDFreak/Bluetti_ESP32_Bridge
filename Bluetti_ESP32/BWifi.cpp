@@ -15,16 +15,6 @@
     #include "display.h"
   #endif
 
-////char mqtt_server[40] = "127.0.0.1";
-//char mqtt_server[40] = "10.0.0.111";  // md 0.1.0
-//char mqtt_port[6]  = "1883";
-//char api_token[45] = "wdZs0Hfij/xLLguSQ4EA5O6gtlIH0As5So1YfjBh8xA=";
-////default custom static IP
-//char static_ip[16] = "10.0.0.";
-//strcat(static_ip, DEV_IP3);
-//char static_gw[16] = "10.0.0.139";
-//char static_sn[16] = "255.255.0.0";
-
 //flag for saving data
 bool shouldSaveConfig = false;
 
