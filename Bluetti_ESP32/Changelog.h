@@ -1,6 +1,6 @@
 // - changelog --------------------------------------------------------------------------
 #define CHANGELOG_H
-/* MD0.1.3 - 2025-12-13 - add Bluetti APEX300 support
+/* MD0.1.3 - 2026-01-31 - improve WiFi connection
  * KNOWN ISSUES
  * - Config page will not start, because config is always valid
  *   Change of configuration only via recompile
