@@ -1,4 +1,4 @@
-# About
+# About Dicontinuation
 Project discontinued because of system change inside Home Assistant. 
 With help of AI I successfully built up a new integration concerning communication with Bluetti AC300.
 This is using ESPHome, containes much less code and containes already the connections inside HA. Using MQTT they are to be installed addidionally.
