@@ -1,4 +1,10 @@
 # About
+Project discontinued because of system change inside Home Assistant. 
+With help of AI I successfully built up a new integration concerning communication with Bluetti AC300.
+This is using ESPHome, containes much less code and containes already the connections inside HA. Using MQTT they are to be installed addidionally.
+It is not public yet, but it will be some time. I first have to learn to make it portable, maybe installable.
+
+#About Bluetti_ESP_Bridge
 This is an ESP32 based Bluetooth to MQTT Bride for BLUETTI power stations. The project is based on https://github.com/warhammerkid/bluetti_mqtt and forked from https://github.com/mariolukas/Bluetti_ESP32_Bridge.
 The code is tested on a AC300. Other Powerstations may also work but not tested by me. The discussion on https://diysolarforum.com/threads/monitoring-bluetti-systems.37870/ was a great help for understanding the protocol.
 Community of Mario Lukas on Discord Server to join: https://discord.gg/fWDSBTCVmB
@@ -15,7 +21,7 @@ Community of Mario Lukas on Discord Server to join: https://discord.gg/fWDSBTCVm
   to see more detailed data of my Bluetti system, I join the
   hacking group to find out. 
 
-# Funktion  (V0.1.1)
+# Function  (V0.1.1)
 
 ## TODO
 * finish update of README.md
